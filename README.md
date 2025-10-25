@@ -56,7 +56,7 @@
 
 ### イメージ画像
 
-![イメージ画像](bingo-num-app\imges\description_image.png)
+<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/ba3ab150-69fd-449d-94f2-51daf40ed50b" />
 
 ---
 
