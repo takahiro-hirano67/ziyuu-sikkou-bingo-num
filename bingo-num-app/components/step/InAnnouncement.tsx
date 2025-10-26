@@ -3,6 +3,7 @@
 import { prizeObjectType } from "../../app/main/PrizeObjectType";
 import AnnouncePrizeNumItem from "../item/AnnouncePrizeNumItem";
 import ShowInfo from "../common/ShowInfo";
+import ExportButtons from "../common/ExportButtons";
 
 // Propsの型定義
 interface InAnnouncementProps {
@@ -36,6 +37,7 @@ const InAnnouncement: React.FC<InAnnouncementProps> = ({ numOfPeople, numOfItems
                     <br />
                     <span className="text-xl font-bold">最後に、アンケートへのご協力をお願いします。</span>
                     <span className="text-xl font-bold">（スライドに戻ります...）</span>
+                    <ExportButtons  prizeNumList={prizeNumList} title="bingo_results" />
                 </div>
             ) : (
                 <div className="self-center mt-6"></div>
