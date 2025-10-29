@@ -58,6 +58,8 @@
 
 <img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/ba3ab150-69fd-449d-94f2-51daf40ed50b" />
 
+![Image](https://github.com/user-attachments/assets/d9384ea7-c268-4fcd-bfe2-77d7ccc3a08e)
+
 ---
 
 ### 公平性について
