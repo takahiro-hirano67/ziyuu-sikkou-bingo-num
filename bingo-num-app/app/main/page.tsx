@@ -119,10 +119,15 @@ export default function MainPage() {
         setPrizeNumList((prev) => prev.map((item) => (item.prizeNum === prizeNum ? { ...item, isAnnounced: false } : item)));
     };
 
+
+    // ============================================================
+    // 要素表示
+    // ============================================================
+
     return (
         <div className="p-8">
-            <h1 className="text-2xl font-bold">ビンゴ番号管理アプリ</h1>
-            <main className="mx-auto max-w-5xl">
+            <h1 className="fixed z-20 text-2xl font-bold">ビンゴ番号管理アプリ</h1>
+            <main className="mx-auto mt-4 max-w-5xl">
                 {/* 参加人数と景品数を入力するフォーム */}
                 {step === "input" && <InputForm numOfPeople={numOfPeople} setNumOfPeople={setNumOfPeople} numOfItems={numOfItems} setNumOfItems={setNumOfItems} handleSubmit={handleSubmit} />}
                 {/* 景品番号選択画面 */}

@@ -23,7 +23,7 @@ const PrizeNumItem: React.FC<PrizeNumItemProps> = ({ item, onSelect, onDisSelect
     };
 
     return (
-        <button onClick={handleClick} onDoubleClick={handleDoubleClick} className={`min-h-25 min-w-30 flex flex-col gap-2 p-4 border-2 rounded-md shadow-[0_2px_4px_rgba(0,0,0,0.1)] ${item.isSelected ? "bg-gray-200 cursor-not-allowed" : "hover:bg-gray-100"}`}>
+        <button onClick={handleClick} onDoubleClick={handleDoubleClick} className={`min-h-25 min-w-30 flex flex-col gap-2 p-4 border-2 rounded-md shadow-[0_2px_4px_rgba(0,0,0,0.1)] ${item.isSelected ? "bg-gray-200 cursor-not-allowed" : "hover:bg-gray-100 cursor-pointer"}`}>
             {item.isSelected ? (
                 <>
                     <span className="text-xl">{item.prizeNum} : 選択済み</span>

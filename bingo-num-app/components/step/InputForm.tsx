@@ -24,14 +24,14 @@ const InputForm: React.FC<InputFormProps> = ({ numOfPeople, setNumOfPeople, numO
                         <label htmlFor="number_of_people" className="text-xl font-bold">
                             参加人数
                         </label>
-                        <input type="number" id="number_of_people" name="number_of_people" placeholder="参加人数を入力" min={0} required value={Number.isNaN(numOfPeople) ? "" : numOfPeople} onChange={(e) => setNumOfPeople(e.target.valueAsNumber)} className="border-2 text-center py-4 w-md text-xl" />
+                        <input type="number" id="number_of_people" name="number_of_people" placeholder="参加人数を入力" min={0} max={1000} required value={Number.isNaN(numOfPeople) ? "" : numOfPeople} onChange={(e) => setNumOfPeople(e.target.valueAsNumber)} className="border-2 text-center py-4 w-md text-xl" />
                     </div>
                     {/* 景品数（値がNaNの時は空文字列を返すように） */}
                     <div className="flex flex-col items-center">
                         <label htmlFor="number_of_items" className="text-xl font-bold">
                             景品数
                         </label>
-                        <input type="number" id="number_of_items" name="number_of_items" placeholder="景品数を入力" min={0} required value={Number.isNaN(numOfItems) ? "" : numOfItems} onChange={(e) => setNumOfItems(e.target.valueAsNumber)} className="border-2 text-center py-4 w-md text-xl" />
+                        <input type="number" id="number_of_items" name="number_of_items" placeholder="景品数を入力" min={0} max={1000} required value={Number.isNaN(numOfItems) ? "" : numOfItems} onChange={(e) => setNumOfItems(e.target.valueAsNumber)} className="border-2 text-center py-4 w-md text-xl" />
                     </div>
                 </section>
                 <button type="submit" className="my-4 mx-auto min-w-xs py-2.5 text-xl font-medium border-2 bg-gray-200/50 rounded-2xl hover:bg-gray-200">
