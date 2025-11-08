@@ -9,11 +9,13 @@ interface InputFormProps {
     setNumOfPeople: React.Dispatch<React.SetStateAction<number>>;
     numOfItems: number;
     setNumOfItems: React.Dispatch<React.SetStateAction<number>>;
+    isSelectAnnounceOrder: boolean;
+    setIsSelectAnnounceOrder: React.Dispatch<React.SetStateAction<boolean>>;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 // 情報入力セクション
-const InputForm: React.FC<InputFormProps> = ({ numOfPeople, setNumOfPeople, numOfItems, setNumOfItems, handleSubmit }) => {
+const InputForm: React.FC<InputFormProps> = ({ numOfPeople, setNumOfPeople, numOfItems, setNumOfItems, isSelectAnnounceOrder, setIsSelectAnnounceOrder, handleSubmit }) => {
     return (
         <div className="flex flex-col">
             <form onSubmit={handleSubmit} className="mt-6  flex flex-col gap-6">
@@ -33,6 +35,10 @@ const InputForm: React.FC<InputFormProps> = ({ numOfPeople, setNumOfPeople, numO
                         </label>
                         <input type="number" id="number_of_items" name="number_of_items" placeholder="景品数を入力" min={0} max={1000} required value={Number.isNaN(numOfItems) ? "" : numOfItems} onChange={(e) => setNumOfItems(e.target.valueAsNumber)} className="border-2 text-center py-4 w-md text-xl" />
                     </div>
+                </section>
+                <section className="flex flex-col items-center gap-2">
+                    <label htmlFor="select_announce_order" className="text-xl font-bold">景品発表順を入れ替える</label>
+                    <input type="checkbox" id="select_announce_order" name="select_announce_order" checked={isSelectAnnounceOrder} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsSelectAnnounceOrder(e.target.checked)}　 className="size-8 ms-2 text-sm font-medium text-gray-900" />
                 </section>
                 <button type="submit" className="my-4 mx-auto min-w-xs py-2.5 text-xl font-medium border-2 bg-gray-200/50 rounded-2xl hover:bg-gray-200">
                     決定

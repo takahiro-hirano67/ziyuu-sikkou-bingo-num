@@ -52,7 +52,8 @@ const InAnnouncement: React.FC<InAnnouncementProps> = ({ numOfPeople, numOfItems
                 <section className="mt-8 flex flex-col items-center gap-6">
                     {prizeNumList
                         .slice() // 元のリストの状態を破壊しないようにコピー
-                        .sort((a, b) => b.winnerNum - a.winnerNum) // 当選番号の降順（価値が低い順）
+                        .sort((a, b) => b.winnerNum - a.winnerNum)              // 当選番号の降順（価値が低い順）
+                        .sort((a, b) => a.displayOrderNum - b.displayOrderNum)  // 景品発表順 ※景品発表順を入れ替えてなければdisplayOrderNumは全て"0"
                         .map((item: prizeObjectType) => (
                             // prizeNum はユニークなので key に指定
                             <DisclosureItem key={item.prizeNum} item={item} onAnnounce={handleAnnounce} onDisAnnounce={handleDisAnnounce} />

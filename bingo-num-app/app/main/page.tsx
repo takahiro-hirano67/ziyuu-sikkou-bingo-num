@@ -2,20 +2,24 @@
 
 import { useState } from "react";
 import { useBeforeUnload } from "react-use";
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { prizeObjectType } from "./PrizeObjectType";
 import InputForm from "../../components/step/InputForm";
 import InProgress from "../../components/step/InProgress";
 import InAnnouncement from "../../components/step/InAnnouncement";
+import SelectAnnounceOrder from "@/components/step/SelectAnnounceOrder";
 
 export default function MainPage() {
     // 基本入力情報
     const [numOfPeople, setNumOfPeople] = useState<number>(0);
     const [numOfItems, setNumOfItems] = useState<number>(0);
+    const [isSelectAnnounceOrder, setIsSelectAnnounceOrder] = useState<boolean>(false);
     // // 景品番号管理
     const [prizeNumList, setPrizeNumList] = useState<prizeObjectType[]>([]);
 
     // アプリ状態管理
-    const [step, setStep] = useState<"input" | "inProgress" | "inAnnouncement">("input"); // 入力画面 | 景品番号選択画面 | 景品発表画面
+    const [step, setStep] = useState<"input" | "selectAnnounceOrder" | "inProgress" | "inAnnouncement">("input"); // 入力画面 | 景品番号選択画面 | 景品発表画面
     const [isProgress, setIsProgress] = useState<boolean>(false); // 誤リロード防止用
 
     // 誤リロード防止処理（リロードやページを閉じようとしたらアラートが出現）
@@ -38,6 +42,7 @@ export default function MainPage() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log(isSelectAnnounceOrder)
         // 入力値が0以下 もしくは NaNの時は処理を実行しない
         if (numOfItems <= 0 || Number.isNaN(numOfItems) || numOfPeople <= 0 || Number.isNaN(numOfPeople)) {
             alert("不正な値、もしくは入力されていません");
@@ -59,22 +64,55 @@ export default function MainPage() {
         }
         // 景品の数に対応した当選番号を生成する
         const ShuffledList: number[] = shuffleArray(originalList.slice());
+
         // 景品番号と当選番号を対応付けたオブジェクトを生成
         const prizeObject: prizeObjectType[] = originalList.map((prizeNum, i) => ({
             prizeNum,
             winnerNum: ShuffledList[i],
+            displayOrderNum: 0,
             isSelected: false,
             isAnnounced: false,
             memo: "",
         }));
 
         setPrizeNumList(prizeObject); // 景品番号のリストを更新
-        setStep("inProgress");
+
+        // 景品発表順の選択画面
+        if (isSelectAnnounceOrder === true) {
+            // 並び替え画面を使う場合のみ「降順ソート」して見やすく
+            const sortedPrizeObject = prizeObject
+                .slice()
+                .sort((a, b) => b.winnerNum - a.winnerNum)
+                .map((item, index) => ({
+                    ...item,
+                    displayOrderNum: index + 1,
+                }));
+            setPrizeNumList(sortedPrizeObject);
+            setStep("selectAnnounceOrder")
+        }
+        // 景品番号選択画面
+        else {
+            // ソートなし（デフォルト：景品番号順 ※当選番号はランダム）
+            setStep("inProgress");
+        }
     };
 
     // ============================================================
-    // 景品発表移行時の処理
+    // 画面移行時の処理
     // ============================================================
+
+    const handleChangeInProgress = () => {
+        if (window.confirm("景品番号の選択に移ります。よろしいですか？")) {
+            // 「はい」を選択した場合の処理
+            // デフォルトの並び順（景品番号順）に戻す
+            const defaultSortedList = [...prizeNumList].sort((a, b) => a.prizeNum - b.prizeNum);
+            setPrizeNumList(defaultSortedList)
+            setStep("inProgress");
+        } else {
+            // 「いいえ」を選択した場合の処理
+            return;
+        }
+    }
 
     const handleChangeAnnouncement = () => {
         if (window.confirm("景品発表へ移ります。よろしいですか？\n確認事項:\n・景品番号は全て配布しているか？\n・未選択の景品番号はないか？")) {
@@ -121,6 +159,30 @@ export default function MainPage() {
 
 
     // ============================================================
+    // 景品発表順を並べ替える処理
+    // ============================================================
+
+    function handleDragEnd(event: DragEndEvent) {
+        const { active, over } = event;
+
+        if (over && active.id !== over.id) {
+            setPrizeNumList((items) => {
+                const oldIndex = items.findIndex(item => item.prizeNum === active.id);  // active.id → ドラッグ元
+                const newIndex = items.findIndex(item => item.prizeNum === over.id);    // over.id → ドロップ先
+
+                // 配列を並べ替える
+                const newOrderedItems = arrayMove(items, oldIndex, newIndex);
+
+                // 必要であれば、ここで index プロパティの番号も振り直す
+                return newOrderedItems.map((item, index) => ({
+                    ...item,
+                    displayOrderNum: index + 1
+                }));
+            });
+        }
+    }
+
+    // ============================================================
     // 要素表示
     // ============================================================
 
@@ -129,7 +191,9 @@ export default function MainPage() {
             <h1 className="fixed z-20 text-2xl font-bold">ビンゴ番号管理アプリ</h1>
             <main className="mx-auto mt-4 max-w-5xl">
                 {/* 参加人数と景品数を入力するフォーム */}
-                {step === "input" && <InputForm numOfPeople={numOfPeople} setNumOfPeople={setNumOfPeople} numOfItems={numOfItems} setNumOfItems={setNumOfItems} handleSubmit={handleSubmit} />}
+                {step === "input" && <InputForm numOfPeople={numOfPeople} setNumOfPeople={setNumOfPeople} numOfItems={numOfItems} setNumOfItems={setNumOfItems} isSelectAnnounceOrder={isSelectAnnounceOrder} setIsSelectAnnounceOrder={setIsSelectAnnounceOrder} handleSubmit={handleSubmit} />}
+                {/* 景品発表順を選択する画面 */}
+                {step === "selectAnnounceOrder" && <SelectAnnounceOrder prizeNumList={prizeNumList} handleDragEnd={handleDragEnd} handleChangeInProgress={handleChangeInProgress} />}
                 {/* 景品番号選択画面 */}
                 {step === "inProgress" && <InProgress numOfPeople={numOfPeople} numOfItems={numOfItems} prizeNumList={prizeNumList} handleSelect={handleSelect} handleDisSelect={handleDisSelect} handleUpdateMemo={handleUpdateMemo} handleChangeAnnounce={handleChangeAnnouncement} />}
                 {/* 景品発表画面 */}
