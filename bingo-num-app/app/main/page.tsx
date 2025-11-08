@@ -15,11 +15,11 @@ export default function MainPage() {
     const [numOfPeople, setNumOfPeople] = useState<number>(0);
     const [numOfItems, setNumOfItems] = useState<number>(0);
     const [isSelectAnnounceOrder, setIsSelectAnnounceOrder] = useState<boolean>(false);
-    // // 景品番号管理
+    // // 引換番号管理
     const [prizeNumList, setPrizeNumList] = useState<prizeObjectType[]>([]);
 
     // アプリ状態管理
-    const [step, setStep] = useState<"input" | "selectAnnounceOrder" | "inProgress" | "inAnnouncement">("input"); // 入力画面 | 景品番号選択画面 | 景品発表画面
+    const [step, setStep] = useState<"input" | "selectAnnounceOrder" | "inProgress" | "inAnnouncement">("input"); // 入力画面 | 引換番号選択画面 | 景品発表画面
     const [isProgress, setIsProgress] = useState<boolean>(false); // 誤リロード防止用
 
     // 誤リロード防止処理（リロードやページを閉じようとしたらアラートが出現）
@@ -57,7 +57,7 @@ export default function MainPage() {
         }
         setIsProgress(true);
 
-        // 景品の数だけ景品番号を生成する
+        // 景品の数だけ引換番号を生成する
         const originalList: number[] = [];
         for (let i = 1; i <= numOfItems; i++) {
             originalList.push(i);
@@ -65,7 +65,7 @@ export default function MainPage() {
         // 景品の数に対応した当選番号を生成する
         const ShuffledList: number[] = shuffleArray(originalList.slice());
 
-        // 景品番号と当選番号を対応付けたオブジェクトを生成
+        // 引換番号と当選番号を対応付けたオブジェクトを生成
         const prizeObject: prizeObjectType[] = originalList.map((prizeNum, i) => ({
             prizeNum,
             winnerNum: ShuffledList[i],
@@ -75,7 +75,7 @@ export default function MainPage() {
             memo: "",
         }));
 
-        setPrizeNumList(prizeObject); // 景品番号のリストを更新
+        setPrizeNumList(prizeObject); // 引換番号のリストを更新
 
         // 景品発表順の選択画面
         if (isSelectAnnounceOrder === true) {
@@ -90,9 +90,9 @@ export default function MainPage() {
             setPrizeNumList(sortedPrizeObject);
             setStep("selectAnnounceOrder")
         }
-        // 景品番号選択画面
+        // 引換番号選択画面
         else {
-            // ソートなし（デフォルト：景品番号順 ※当選番号はランダム）
+            // ソートなし（デフォルト：引換番号順 ※当選番号はランダム）
             setStep("inProgress");
         }
     };
@@ -102,9 +102,9 @@ export default function MainPage() {
     // ============================================================
 
     const handleChangeInProgress = () => {
-        if (window.confirm("景品番号の選択に移ります。よろしいですか？")) {
+        if (window.confirm("引換番号の選択に移ります。よろしいですか？")) {
             // 「はい」を選択した場合の処理
-            // デフォルトの並び順（景品番号順）に戻す
+            // デフォルトの並び順（引換番号順）に戻す
             const defaultSortedList = [...prizeNumList].sort((a, b) => a.prizeNum - b.prizeNum);
             setPrizeNumList(defaultSortedList)
             setStep("inProgress");
@@ -115,7 +115,7 @@ export default function MainPage() {
     }
 
     const handleChangeAnnouncement = () => {
-        if (window.confirm("景品発表へ移ります。よろしいですか？\n確認事項:\n・景品番号は全て配布しているか？\n・未選択の景品番号はないか？")) {
+        if (window.confirm("景品発表へ移ります。よろしいですか？\n確認事項:\n・引換番号は全て配布しているか？\n・未選択の引換番号はないか？")) {
             // 「はい」を選択した場合の処理
             setStep("inAnnouncement");
         } else {
@@ -125,14 +125,14 @@ export default function MainPage() {
     };
 
     // ============================================================
-    // 景品番号の要素に対する処理（番号選択時）
+    // 引換番号の要素に対する処理（番号選択時）
     // ============================================================
 
-    // 景品番号をクリックすると選択済み
+    // 引換番号をクリックすると選択済み
     const handleSelect = (prizeNum: number) => {
         setPrizeNumList((prev) => prev.map((item) => (item.prizeNum === prizeNum ? { ...item, isSelected: true } : item)));
     };
-    // 景品番号をダブルクリックすると選択状態を解除（保険機能）
+    // 引換番号をダブルクリックすると選択状態を解除（保険機能）
     const handleDisSelect = (prizeNum: number) => {
         alert("選択状態を解除しました");
         setPrizeNumList((prev) => prev.map((item) => (item.prizeNum === prizeNum ? { ...item, isSelected: false } : item)));
@@ -144,14 +144,14 @@ export default function MainPage() {
 
 
     // ============================================================
-    // 景品番号の要素に対する処理（景品発表時）
+    // 引換番号の要素に対する処理（景品発表時）
     // ============================================================
 
-    // 景品番号をクリックすると選択済み
+    // 引換番号をクリックすると選択済み
     const handleAnnounce = (prizeNum: number) => {
         setPrizeNumList((prev) => prev.map((item) => (item.prizeNum === prizeNum ? { ...item, isAnnounced: true } : item)));
     };
-    // 景品番号をダブルクリックすると選択状態を解除（保険機能）
+    // 引換番号をダブルクリックすると選択状態を解除（保険機能）
     const handleDisAnnounce = (prizeNum: number) => {
         alert("発表状態を解除しました");
         setPrizeNumList((prev) => prev.map((item) => (item.prizeNum === prizeNum ? { ...item, isAnnounced: false } : item)));
@@ -194,7 +194,7 @@ export default function MainPage() {
                 {step === "input" && <InputForm numOfPeople={numOfPeople} setNumOfPeople={setNumOfPeople} numOfItems={numOfItems} setNumOfItems={setNumOfItems} isSelectAnnounceOrder={isSelectAnnounceOrder} setIsSelectAnnounceOrder={setIsSelectAnnounceOrder} handleSubmit={handleSubmit} />}
                 {/* 景品発表順を選択する画面 */}
                 {step === "selectAnnounceOrder" && <SelectAnnounceOrder prizeNumList={prizeNumList} handleDragEnd={handleDragEnd} handleChangeInProgress={handleChangeInProgress} />}
-                {/* 景品番号選択画面 */}
+                {/* 引換番号選択画面 */}
                 {step === "inProgress" && <InProgress numOfPeople={numOfPeople} numOfItems={numOfItems} prizeNumList={prizeNumList} handleSelect={handleSelect} handleDisSelect={handleDisSelect} handleUpdateMemo={handleUpdateMemo} handleChangeAnnounce={handleChangeAnnouncement} />}
                 {/* 景品発表画面 */}
                 {step === "inAnnouncement" && <InAnnouncement numOfPeople={numOfPeople} numOfItems={numOfItems} prizeNumList={prizeNumList} handleAnnounce={handleAnnounce} handleDisAnnounce={handleDisAnnounce} />}

@@ -17,7 +17,7 @@ interface InAnnouncementProps {
 
 // 番号選択画面（ビンゴ中）
 const InAnnouncement: React.FC<InAnnouncementProps> = ({ numOfPeople, numOfItems, prizeNumList, handleAnnounce, handleDisAnnounce }) => {
-    // 残り景品数の変数（景品数 - 発表された景品番号の数）
+    // 残り景品数の変数（景品数 - 発表された引換番号の数）
     const restPrizes = numOfItems - prizeNumList.filter((item) => item.isAnnounced === true).length;
     return (
         <div className="mt-6 flex flex-col h-screen">
@@ -27,7 +27,7 @@ const InAnnouncement: React.FC<InAnnouncementProps> = ({ numOfPeople, numOfItems
                     {/* 進行情報表示 */}
                     <ShowInfo numOfPeople={numOfPeople} numOfItems={numOfItems} prizeNumList={prizeNumList} mode="announce" />
                 </div>
-                {/* 景品番号一覧 (景品番号〇, 当選番号✖, 景品番号順) */}
+                {/* 引換番号一覧 (引換番号〇, 当選番号✖, 引換番号順) */}
                 <section className="mt-8 grid grid-cols-5 gap-8">
                     {prizeNumList.map((item: prizeObjectType) => (
                         // prizeNum はユニークなので key に指定
@@ -48,7 +48,7 @@ const InAnnouncement: React.FC<InAnnouncementProps> = ({ numOfPeople, numOfItems
                 )}
             </div>
             <div className="flex-[1_1_46%] overflow-y-auto  p-4">
-                {/* 発表順リスト (景品番号✖, 当選番号〇, 当選番号順) */}
+                {/* 発表順リスト (引換番号✖, 当選番号〇, 当選番号順) */}
                 <section className="mt-8 flex flex-col items-center gap-6">
                     {prizeNumList
                         .slice() // 元のリストの状態を破壊しないようにコピー

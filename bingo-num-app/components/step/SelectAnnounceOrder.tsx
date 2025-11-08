@@ -17,7 +17,7 @@ export default function SelectAnnounceOrder({ prizeNumList, handleDragEnd, handl
     return (
         <div className="flex flex-col gap-4">
             <h2 className="text-xl font-bold mt-10">景品発表順の設定</h2>
-            <button onClick={handleChangeInProgress} className="my-4 mx-auto min-w-xs py-2.5 text-xl font-medium border-2 bg-gray-200/50 rounded-2xl hover:bg-gray-200">景品番号の選択へ進む</button>
+            <button onClick={handleChangeInProgress} className="my-4 mx-auto min-w-xs py-2.5 text-xl font-medium border-2 bg-gray-200/50 rounded-2xl hover:bg-gray-200">引換番号の選択へ進む</button>
 
             <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={prizeNumList.map((i) => i.prizeNum)} strategy={verticalListSortingStrategy}>

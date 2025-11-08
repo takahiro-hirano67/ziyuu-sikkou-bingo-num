@@ -17,14 +17,14 @@ interface InProgressProps {
 
 // 番号選択画面（ビンゴ中）
 const InProgress: React.FC<InProgressProps> = ({ numOfPeople, numOfItems, prizeNumList, handleSelect, handleDisSelect, handleUpdateMemo, handleChangeAnnounce }) => {
-    // 残り景品数の変数（景品数 - 選択された景品番号の数）
+    // 残り景品数の変数（景品数 - 選択された引換番号の数）
     const restPrizes = numOfItems - prizeNumList.filter((item) => item.isSelected === true).length;
     return (
         <div className="mt-6  flex flex-col gap-6">
             <h2 className="text-2xl text-center font-bold">番号選択</h2>
             {/* 進行情報表示 */}
             <ShowInfo numOfPeople={numOfPeople} numOfItems={numOfItems} prizeNumList={prizeNumList} mode="progress" />
-            {/* 景品番号一覧 */}
+            {/* 引換番号一覧 */}
             <section className="mt-8 grid grid-cols-5 gap-8 text-center">
                 {prizeNumList.map((item: prizeObjectType) => (
                     // prizeNum はユニークなので key に指定
