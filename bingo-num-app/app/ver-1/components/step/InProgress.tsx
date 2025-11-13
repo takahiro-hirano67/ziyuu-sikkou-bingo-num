@@ -1,6 +1,6 @@
 "use client";
 
-import { prizeObjectType } from "../../app/main/PrizeObjectType";
+import { prizeObjectType } from "../../PrizeObjectType";
 import ShowInfo from "../common/ShowInfo";
 import PrizeNumItem from "../item/PrizeNumItem";
 

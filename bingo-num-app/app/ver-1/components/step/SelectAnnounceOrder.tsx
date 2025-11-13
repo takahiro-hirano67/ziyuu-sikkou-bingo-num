@@ -3,9 +3,7 @@
 import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { arrayMove } from "@dnd-kit/sortable";
-import { prizeObjectType } from "@/app/main/PrizeObjectType";
-import { useState } from "react";
+import { prizeObjectType } from "@/app/ver-1/PrizeObjectType";
 
 interface Props {
     prizeNumList: prizeObjectType[];

@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { useBeforeUnload } from "react-use";
-import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import { arrayMove, SortableContext } from '@dnd-kit/sortable';
+import { DragEndEvent } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import { prizeObjectType } from "./PrizeObjectType";
-import InputForm from "../../components/step/InputForm";
-import InProgress from "../../components/step/InProgress";
-import InAnnouncement from "../../components/step/InAnnouncement";
-import SelectAnnounceOrder from "@/components/step/SelectAnnounceOrder";
+import InputForm from "./components/step/InputForm";
+import InProgress from "./components/step/InProgress";
+import InAnnouncement from "./components/step/InAnnouncement";
+import SelectAnnounceOrder from "@/app/ver-1/components/step/SelectAnnounceOrder";
 
 export default function MainPage() {
     // 基本入力情報

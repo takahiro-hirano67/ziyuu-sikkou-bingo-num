@@ -1,6 +1,6 @@
 "use client";
 
-import { prizeObjectType } from "../../app/main/PrizeObjectType";
+import { prizeObjectType } from "../../PrizeObjectType";
 import Image from "next/image";
 import edit_icon from "@/imges/edit_icon.svg";
 

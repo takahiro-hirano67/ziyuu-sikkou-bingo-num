@@ -1,6 +1,6 @@
 "use client";
 
-import { prizeObjectType } from "../../app/main/PrizeObjectType";
+import { prizeObjectType } from "../../PrizeObjectType";
 
 // Propsの型定義
 interface ShowInfoProps {

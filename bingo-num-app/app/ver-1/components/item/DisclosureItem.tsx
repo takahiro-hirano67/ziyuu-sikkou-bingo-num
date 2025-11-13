@@ -1,6 +1,6 @@
 "use client";
 
-import { prizeObjectType } from "../../app/main/PrizeObjectType";
+import { prizeObjectType } from "../../PrizeObjectType";
 
 // Propsの型
 interface PrizeNumItemProps {
@@ -20,14 +20,14 @@ const DisclosureItem: React.FC<PrizeNumItemProps> = ({ item, onAnnounce, onDisAn
                 <>
                     <div>
                         <span className="text-xl">当選番号 : {item.winnerNum}</span>
-                        <span className="text-xl ml-20">景品番号 : {item.prizeNum}</span>
+                        <span className="text-xl ml-20">引換番号 : {item.prizeNum}</span>
                     </div>
                 </>
             ) : (
                 <>
                     <div className="w-full">
                         <span className="text-xl">当選番号 : {item.winnerNum}</span>
-                        <span className="text-xl ml-20">景品番号 : ？</span>
+                        <span className="text-xl ml-20">引換番号 : ？</span>
                     </div>
                 </>
             )}

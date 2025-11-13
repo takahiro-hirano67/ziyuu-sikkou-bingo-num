@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { prizeObjectType } from "@/app/main/PrizeObjectType";
+import { prizeObjectType } from "@/app/ver-1/PrizeObjectType";
 
 interface ExportButtonsProps {
   prizeNumList: prizeObjectType[];
