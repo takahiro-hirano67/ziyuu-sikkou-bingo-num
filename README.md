@@ -76,3 +76,25 @@ yarn dev
 ## デプロイ
 
 このアプリケーションはNext.jsプロジェクトとして、Vercelへのデプロイに最適化されています。
+
+
+
+```
+ziyuu-sikkou-bingo-num
+├─ bingo-num-app
+│  ├─ app
+│  │  ├─ favicon.ico
+│  │  ├─ globals.css
+│  │  ├─ layout.tsx
+│  │  └─ page.tsx
+│  ├─ eslint.config.mjs
+│  ├─ next.config.ts
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ postcss.config.mjs
+│  ├─ README.md
+│  └─ tsconfig.json
+├─ README.md
+└─ repomix-output.xml
+
+```
