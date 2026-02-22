@@ -495,8 +495,8 @@ function SortablePrizeItem({ prize, toggleExcludePrize }: { prize: PrizeObject; 
             <button
                 onClick={() => toggleExcludePrize(prize.id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isExcluded
-                        ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                        : 'bg-red-100 text-red-700 hover:bg-red-200'
+                    ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                    : 'bg-red-100 text-red-700 hover:bg-red-200'
                     }`}
             >
                 {isExcluded ? <ArrowUturnLeftIcon className="w-4 h-4" /> : <TrashIcon className="w-4 h-4" />}
