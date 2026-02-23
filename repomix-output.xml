@@ -1,0 +1,1621 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+bingo-num-app/.gitignore
+bingo-num-app/app/favicon.ico
+bingo-num-app/app/globals.css
+bingo-num-app/app/layout.tsx
+bingo-num-app/app/page.tsx
+bingo-num-app/components/steps/AnnouncePrizeStep.tsx
+bingo-num-app/components/steps/PeopleInputStep.tsx
+bingo-num-app/components/steps/PrizeInputStep.tsx
+bingo-num-app/components/steps/SelectPrizeNumStep.tsx
+bingo-num-app/eslint.config.mjs
+bingo-num-app/hooks/useBingoState.ts
+bingo-num-app/next.config.ts
+bingo-num-app/package.json
+bingo-num-app/postcss.config.mjs
+bingo-num-app/tsconfig.json
+bingo-num-app/types/index.ts
+bingo-num-app/utils/shuffle.ts
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="bingo-num-app/.gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="bingo-num-app/components/steps/AnnouncePrizeStep.tsx">
+// bingo-num-app/components/steps/AnnouncePrizeStep.tsx
+
+"use client"
+
+import { useMemo } from "react";
+// 型定義
+import type { PrizeObject } from "@/types";
+
+// ============================================================
+// 【ステップ4：景品発表コンポーネント】
+// ポイント:
+// - 発表順リストをクリックすることで、対応する引換番号と景品名を公開する。
+// ============================================================
+
+interface AnnouncePrizeStepProps {
+    prizeObjectList: PrizeObject[];
+    setPrizeObjectList: React.Dispatch<React.SetStateAction<PrizeObject[]>>;
+    numberOfPeople: number;
+    activePrizes: PrizeObject[];
+    numberOfActivePrizes: number;
+    handleAnnouncePrize: (id: string) => void; // 景品発表
+    handleUnannouncePrize: (id: string) => void; // 景品発表状態解除
+}
+
+function AnnouncePrizeStep({
+    setPrizeObjectList,
+    numberOfPeople,
+    activePrizes,
+    numberOfActivePrizes,
+    handleAnnouncePrize,
+    handleUnannouncePrize,
+}: AnnouncePrizeStepProps) {
+
+    // 発表済みの景品数
+    const announcedPrizesCount = activePrizes.filter(p => p.isAnnounced).length;
+    // 残りの未発表景品数
+    const remainingPrizesCount = numberOfActivePrizes - announcedPrizesCount;
+    // 全て発表済みか
+    const allPrizesAnnounced = remainingPrizesCount === 0;
+
+    // 中段グリッド表示用：景品番号順にソートされたリスト
+    const prizesSortedByNum = useMemo(() => {
+        return [...activePrizes].sort((a, b) => (a.prizeNum || 0) - (b.prizeNum || 0));
+    }, [activePrizes]);
+
+    // 下段リスト表示用：発表順にソートされたリスト
+    const prizesSortedByOrder = useMemo(() => {
+        return [...activePrizes].sort((a, b) => a.displayOrderNum - b.displayOrderNum);
+    }, [activePrizes]);
+
+
+    return (
+        <div className="p-6 md:p-8">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-2">Step 4: 景品発表</h2>
+            <p className="text-gray-600 mb-2">下の「景品発表リスト」をクリックすると、景品名と番号が公開されます。ダブルクリックで発表を取り消せます。</p>
+
+            {/* --- 上部：情報 --- */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4 p-4 bg-gray-100 rounded-lg">
+                <div className="flex flex-col justify-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-md font-medium text-gray-500">参加人数</span>
+                    <span className="text-2xl font-bold text-gray-800">{numberOfPeople}</span>
+                </div>
+                <div className="flex flex-col justify-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-md font-medium text-gray-500">景品数</span>
+                    <span className="text-2xl font-bold text-blue-600">{numberOfActivePrizes}</span>
+                </div>
+                <div className="flex flex-col justify-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-md font-medium text-gray-500">残り (未発表)</span>
+                    <span className={`text-2xl font-bold ${remainingPrizesCount > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                        {remainingPrizesCount}
+                    </span>
+                </div>
+            </div>
+
+            {/* --- 中部：景品番号グリッド (結果表示) --- */}
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">引換番号 対応表</h3>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 mb-4">
+                {prizesSortedByNum.map(prize => (
+                    <AnnounceNumberBox key={prize.id} prize={prize} />
+                ))}
+            </div>
+
+            {/* --- 下部：景品発表リスト --- */}
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">景品発表リスト (発表順)</h3>
+            <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                <ul className="divide-y divide-gray-200">
+                    {prizesSortedByOrder.map(prize => (
+                        <AnnouncePrizeItem
+                            key={prize.id}
+                            prize={prize}
+                            onAnnounce={handleAnnouncePrize}
+                            onUnannounce={handleUnannouncePrize}
+                        />
+                    ))}
+                </ul>
+            </div>
+
+            {/* --- 完了メッセージ --- */}
+            {allPrizesAnnounced && (
+                <div className="mt-8 p-6 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-lg text-center">
+                    <p className="text-2xl font-semibold">
+                        すべての景品が発表されました！
+                    </p>
+                    <p className="mt-2">お疲れ様でした！</p>
+                </div>
+            )}
+
+        </div>
+    );
+}
+export default AnnouncePrizeStep
+
+
+// ============================================================
+// 中段の景品番号ボックス (表示のみ)
+// ============================================================
+
+function AnnounceNumberBox({ prize }: { prize: PrizeObject }) {
+    const isAnnounced = prize.isAnnounced;
+    return (
+        <div
+            className={`flex flex-col justify-between h-36 w-full rounded-lg border-2 p-3 text-center transition-all duration-300
+        ${isAnnounced
+                    ? 'bg-yellow-100 border-yellow-300 shadow-lg scale-105' // 発表済み
+                    : 'bg-gray-100 border-gray-300' // 未発表
+                }`}
+        >
+            {/* 景品番号 */}
+            <div className="text-2xl font-bold text-gray-800">{prize.prizeNum}</div>
+
+            {/* 景品名 */}
+            <div className="text-md font-semibold wrap-break-word my-1 min-h-10 flex items-center justify-center">
+                {isAnnounced ? (
+                    <span className="text-blue-700">{prize.prizeName}</span>
+                ) : (
+                    <span className="text-2xl font-bold text-gray-400">
+                        ???
+                    </span>
+                )}
+            </div>
+
+            {/* メモ */}
+            <div className="text-sm text-gray-600 truncate" title={prize.memo}>
+                {prize.memo || '(メモなし)'}
+            </div>
+        </div>
+    );
+}
+
+// ============================================================
+// 下段の景品リストアイテム (状態制御)
+// ============================================================
+
+function AnnouncePrizeItem({ prize, onAnnounce, onUnannounce }: {
+    prize: PrizeObject;
+    onAnnounce: (id: string) => void;
+    onUnannounce: (id: string) => void;
+}) {
+    const isAnnounced = prize.isAnnounced;
+
+    const handleClick = () => {
+        if (!isAnnounced) {
+            onAnnounce(prize.id);
+        }
+    };
+
+    const handleDoubleClick = () => {
+        if (isAnnounced) {
+            onUnannounce(prize.id);
+        }
+    };
+
+    return (
+        <li
+            onClick={handleClick}
+            onDoubleClick={handleDoubleClick}
+            className={`flex items-center justify-between p-4 transition-all duration-300
+        ${isAnnounced
+                    ? 'bg-green-100 cursor-not-allowed' // 発表済み
+                    : 'bg-white hover:bg-gray-50 cursor-pointer' // 未発表
+                }`}
+        >
+            {/* 発表順 と 景品名 */}
+            <div className="flex items-center gap-3 overflow-hidden">
+                <span className={`shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold
+            ${isAnnounced ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'}
+        `}>
+                </span>
+                <span className={`text-lg font-medium truncate ${isAnnounced ? 'text-green-800' : 'text-gray-800'}`}>
+                    {prize.prizeName}
+                </span>
+            </div>
+
+            {/* 景品番号 */}
+            <div className="flex items-center gap-3 shrink-0 ml-4">
+                {isAnnounced ? (
+                    <>
+                        <span className='text-xl font-medium text-gray-600 bg-none'>景品番号：</span>
+                        <span className="px-4 py-1 rounded-full bg-blue-600 text-white text-lg font-bold shadow">{prize.prizeNum}</span>
+                    </>
+                ) : (
+                    <>
+                        <span className='text-xl font-medium text-gray-600'>景品番号：</span>
+                        <span className="text-2xl font-bold text-gray-400">???</span>
+                    </>
+                )}
+            </div>
+        </li>
+    );
+}
+</file>
+
+<file path="bingo-num-app/components/steps/PeopleInputStep.tsx">
+// bingo-num-app/components/steps/PeopleInputStep.tsx
+
+"use client"
+
+// DND-Kit ライブラリのインポート
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { DragEndEvent } from '@dnd-kit/core';
+// Heroicons ライブラリのインポート（アイコン用）
+import { ArrowUturnLeftIcon, Bars3Icon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
+// 型定義
+import type { PrizeObject, Step } from '@/types';
+// 配列シャッフル処理
+import { fisherYatesShuffle } from '@/utils/shuffle';
+
+
+// ============================================================
+// 【ステップ2：参加人数入力 & 景品数調整コンポーネント】
+// ポイント:
+// - 参加人数を入力し、景品リストの発表順をドラッグ＆ドロップで並べ替える。
+// - 参加人数より景品が多い場合は、景品を除外して数を調整するよう誘導。
+// （参加人数より景品が多い場合はそもそも実行しない。）
+// ============================================================
+
+interface PeopleInputStepProps {
+    prizeObjectList: PrizeObject[];
+    setPrizeObjectList: React.Dispatch<React.SetStateAction<PrizeObject[]>>;
+    numberOfPeople: number;
+    setNumberOfPeople: React.Dispatch<React.SetStateAction<number>>;
+    setCurrentStep: React.Dispatch<React.SetStateAction<Step>>;
+    activePrizes: PrizeObject[]; // 有効な景品リスト
+    numberOfActivePrizes: number; // 有効な景品数
+    toggleExcludePrize: (id: string) => void; // 景品の「除外」・「復元」を切り替える
+    handleDragEnd: (event: DragEndEvent) => void; // ドラッグ＆ドロップ終了時
+}
+
+
+function PeopleInputStep({
+    prizeObjectList,
+    setPrizeObjectList,
+    numberOfPeople,
+    setNumberOfPeople,
+    setCurrentStep,
+    activePrizes,
+    numberOfActivePrizes,
+    toggleExcludePrize,
+    handleDragEnd,
+}: PeopleInputStepProps) {
+
+    // 除外された景品数
+    const excludedPrizesCount = prizeObjectList.length - numberOfActivePrizes;
+
+    // 決定ボタンを押せるかどうかの条件（参加人数 ≧ 景品数, かつ景品数 > 0, かつ参加人数 > 0）
+    const canProceed = numberOfPeople >= numberOfActivePrizes && numberOfActivePrizes > 0 && numberOfPeople > 0;
+
+    // dnd-kit センサーの初期化（ポインターとキーボード）
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    // ------------------------------------------------------------
+    // 決定ボタン（景品番号の割り当て）を押した時の処理（次のステップに移行）
+    // ------------------------------------------------------------
+
+    const handleSubmit = () => {
+        if (!canProceed) {
+            alert("参加人数が景品数（除外を除く）以上になるように設定してください。");
+            return;
+        }
+
+        // 1. 有効な景品リスト (activePrizes は props から取得)
+
+        // 2. 景品番号リスト [1, 2, ..., numOfItems] を生成
+        const prizeNumbers = Array.from({ length: numberOfActivePrizes }, (_, i) => i + 1);
+
+        // 3. 有効な景品リストをシャッフル
+        const shuffledPrizes = fisherYatesShuffle(activePrizes);
+
+        // 4. シャッフルした景品に景品番号を割り当て (高速化のためMap使用)
+        const prizedMap = new Map<string, number>();
+        shuffledPrizes.forEach((prize, index) => {
+            prizedMap.set(prize.id, prizeNumbers[index]);
+        });
+
+        // 5. 元のリスト（prizeObjectList）を更新
+        setPrizeObjectList(prevList =>
+            prevList.map(prize => {
+                // MapにIDが存在（＝有効な景品）なら、景品番号を設定
+                if (prizedMap.has(prize.id)) {
+                    return { ...prize, prizeNum: prizedMap.get(prize.id)! };
+                }
+                return prize; // 除外された景品は prizeNum: null のまま
+            })
+        );
+
+        setCurrentStep("selectPrizeNum"); // 次のステップへ
+    };
+
+    return (
+        <div className="p-6 md:p-8">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Step 2: 参加人数入力 & 景品調整</h2>
+
+            {/* --- 上部：入力欄 --- */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4 p-6 bg-gray-100 rounded-lg">
+                {/* 参加人数入力 */}
+                <div>
+                    <label htmlFor="peopleInput" className="block text-xl font-medium text-gray-700 mb-1">
+                        参加人数
+                    </label>
+                    <input
+                        id="peopleInput"
+                        type="number"
+                        min={0}
+                        value={numberOfPeople === 0 ? '' : numberOfPeople} // 0の場合は空表示
+                        onChange={(e) => setNumberOfPeople(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-full p-3 text-lg border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
+                        placeholder="例: 10"
+                    />
+                </div>
+                {/* 有効な景品数 */}
+                <div className="flex flex-col justify-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-lg font-medium text-gray-500">現在の景品数 (有効)</span>
+                    <span className="text-2xl font-bold text-blue-600">{numberOfActivePrizes}</span>
+                </div>
+                {/* 除外した景品数 */}
+                <div className="flex flex-col justify-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-lg font-medium text-gray-500">除外した景品数</span>
+                    <span className="text-2xl font-bold text-gray-600">{excludedPrizesCount}</span>
+                </div>
+            </div>
+
+            {/* --- 警告メッセージ --- */}
+            {!canProceed && (
+                <div className="mb-4 p-4 text-lg bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
+                    <p className="font-semibold">
+                        {numberOfPeople <= 0 ? "参加人数を入力してください。" : "参加人数が有効な景品数以上である必要があります。"}
+                    </p>
+                    <p className="text-md">
+                        （ 現在：{numberOfPeople} (参加人数) vs {numberOfActivePrizes} (景品数) ）
+                    </p>
+                </div>
+            )}
+
+            {/* --- 下部：景品リスト (DND) --- */}
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">景品リスト (発表順)</h3>
+            <p className="text-md text-gray-500 mb-4">ドラッグ&ドロップで発表順を変更できます。参加人数より景品が多い場合は「除外」してください。</p>
+
+            <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext
+                        items={prizeObjectList.map(p => p.id)} // IDの配列を渡す
+                        strategy={verticalListSortingStrategy} // 垂直方向のソート
+                    >
+                        <ul className="divide-y divide-gray-200">
+                            {/* 発表順（displayOrderNum）でソートして表示 */}
+                            {prizeObjectList
+                                .sort((a, b) => a.displayOrderNum - b.displayOrderNum)
+                                .map((prize) => (
+                                    <SortablePrizeItem
+                                        key={prize.id}
+                                        prize={prize}
+                                        toggleExcludePrize={toggleExcludePrize}
+                                    />
+                                ))}
+                        </ul>
+                    </SortableContext>
+                </DndContext>
+            </div>
+
+            {/* --- 決定ボタン --- */}
+            <div className="mt-6">
+                <button
+                    onClick={handleSubmit}
+                    disabled={!canProceed} // 条件を満たさないと無効
+                    className="flex items-center gap-2 float-right px-8 py-3 mb-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                    <CheckIcon className="w-5 h-5" />
+                    景品番号を割り当て
+                </button>
+            </div>
+        </div>
+    );
+}
+export default PeopleInputStep
+
+
+// ============================================================
+// 並べ替え可能な景品リストアイテム
+// ============================================================
+
+function SortablePrizeItem({ prize, toggleExcludePrize }: { prize: PrizeObject; toggleExcludePrize: (id: string) => void; }) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({ id: prize.id }); // IDで紐付け
+
+    // ドラッグ&ドロップ中のスタイル
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    const isExcluded = prize.isExcluded;
+
+    return (
+        <li
+            ref={setNodeRef} // ドラッグ&ドロップノード参照
+            style={style}
+            className={`flex items-center justify-between p-4 ${isExcluded ? 'bg-gray-200 opacity-60' : 'bg-white'}`}
+        >
+            <div className="flex items-center gap-4">
+                {/* ドラッグハンドル */}
+                <button
+                    {...attributes} // DND属性
+                    {...listeners} // DNDリスナー
+                    aria-label="並べ替え用のドラッグハンドル"
+                    className={`cursor-grab touch-none p-2 rounded ${isExcluded ? 'text-gray-500 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-100'}`}
+                    disabled={isExcluded} // 除外中はDND不可
+                >
+                    <Bars3Icon className="w-5 h-5" />
+                </button>
+                {/* 発表順 と 景品名 */}
+                <span className={`text-lg font-medium ${isExcluded ? 'text-gray-600 line-through' : 'text-gray-800'}`}>
+                    {prize.displayOrderNum}. {prize.prizeName}
+                </span>
+            </div>
+            {/* 除外/復元ボタン */}
+            <button
+                onClick={() => toggleExcludePrize(prize.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isExcluded
+                    ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                    : 'bg-red-100 text-red-700 hover:bg-red-200'
+                    }`}
+            >
+                {isExcluded ? <ArrowUturnLeftIcon className="w-4 h-4" /> : <TrashIcon className="w-4 h-4" />}
+                {isExcluded ? '復元' : '除外'}
+            </button>
+        </li>
+    );
+}
+</file>
+
+<file path="bingo-num-app/components/steps/PrizeInputStep.tsx">
+// bingo-num-app/components/steps/PrizeInputStep.tsx
+
+"use client"
+
+import { useMemo, useState } from "react";
+// 型定義
+import type { PrizeObject, Step } from "@/types";
+
+// ============================================================
+// 【ステップ1：景品入力コンポーネント】
+// ポイント:
+// - 景品リストを改行区切りで入力。
+// ============================================================
+
+interface PrizeInputStepProps {
+    setIsProgress: React.Dispatch<React.SetStateAction<boolean>>;
+    setPrizeObjectList: React.Dispatch<React.SetStateAction<PrizeObject[]>>;
+    setCurrentStep: React.Dispatch<React.SetStateAction<Step>>;
+}
+
+function PrizeInputStep({ setPrizeObjectList, setCurrentStep, setIsProgress }: PrizeInputStepProps) {
+
+    // テキストエリアの入力値を管理
+    const [prizeInputText, setPrizeInputText] = useState("");
+
+    // テキストエリアの入力に基づいて現在の景品リスト（文字列配列）を計算
+    const currentPrizes = useMemo(() => {
+        // 改行で分割し、空行を除去
+        return prizeInputText.split('\n').filter(name => name.trim() !== '');
+    }, [prizeInputText]);
+
+    // 現在の景品数
+    const currentPrizeCount = currentPrizes.length;
+
+    // ------------------------------------------------------------
+    // 決定ボタン押下時の処理（次のステップへ移行）
+    // ------------------------------------------------------------
+
+    const handleSubmit = () => {
+        if (currentPrizeCount === 0) {
+            alert("景品を1つ以上入力してください。");
+            return;
+        }
+
+        // 景品オブジェクトの配列を生成
+        const newPrizeObjectList: PrizeObject[] = currentPrizes.map((name, index) => ({
+            id: crypto.randomUUID(), // dnd-kit用の一意ID
+            prizeName: name.trim(), // 景品名
+            prizeNum: null, // 景品番号
+            displayOrderNum: index + 1, // 発表順（入力順で初期化）
+            isSelected: false, // 選択状態
+            isAnnounced: false, // 発表状態
+            isExcluded: false, // 除外状態
+            memo: "",
+        }));
+        setIsProgress(true); // アプリ処理開始（以降はリロードやページを閉じようとした際に確認アラートが発生）
+        setPrizeObjectList(newPrizeObjectList);
+        setCurrentStep("peopleInput"); // 次のステップへ
+    };
+
+    return (
+        <div className="p-6 md:p-8">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-2">Step 1: 景品入力</h2>
+            <p className="text-lg text-gray-600 mb-6">景品名を1行に1つずつ入力してください。<br />（メモ帳などからのコピー＆ペーストを推奨します）</p>
+
+            {/* 現在の景品数を表示 */}
+            <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg">
+                <span className="text-xl font-medium text-gray-800">
+                    現在の景品数: <span className="text-blue-600 text-2xl font-bold">{currentPrizeCount}</span>
+                </span>
+            </div>
+
+            {/* 景品入力テキストエリア */}
+            <textarea
+                value={prizeInputText}
+                onChange={(e) => setPrizeInputText(e.target.value)}
+                rows={15}
+                className="w-full p-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                placeholder={"例：\n旅行券\nワイヤレスイヤホン\nモバイルバッテリー\n・\n・\n・"} />
+
+            {/* 決定ボタン */}
+            <div className="mt-8 text-center">
+                <button
+                    onClick={handleSubmit}
+                    disabled={currentPrizeCount === 0} // 景品が0の場合は無効
+                    className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                    参加人数入力へ進む
+                </button>
+            </div>
+        </div>
+    );
+}
+export default PrizeInputStep
+</file>
+
+<file path="bingo-num-app/components/steps/SelectPrizeNumStep.tsx">
+// bingo-num-app/components/steps/SelectPrizeNumStep.tsx
+
+"use client"
+
+import { useMemo } from "react";
+// アイコン
+import { CheckIcon } from '@heroicons/react/24/outline';
+// 型定義
+import type { PrizeObject, Step } from "@/types";
+
+// ============================================================
+// 【ステップ3: 景品番号選択コンポーネント】
+// ポイント:
+// - ビンゴした人が選んだ引換番号を「選択状態」にする。
+// - メモ（当選者名・学籍番号など）を記録可能。
+// ============================================================
+
+interface SelectPrizeNumStepProps {
+    prizeObjectList: PrizeObject[];
+    setPrizeObjectList: React.Dispatch<React.SetStateAction<PrizeObject[]>>;
+    numberOfPeople: number;
+    setCurrentStep: React.Dispatch<React.SetStateAction<Step>>;
+    activePrizes: PrizeObject[];
+    numberOfActivePrizes: number;
+    handleSelectPrize: (prizeNum: number) => void; // 景品選択
+    handleDeselectPrize: (prizeNum: number) => void; // 景品選択状態解除
+    handleMemoChange: (prizeNum: number, memo: string) => void; // メモ欄の更新
+}
+
+function SelectPrizeNumStep({
+    setPrizeObjectList,
+    numberOfPeople,
+    setCurrentStep,
+    activePrizes,
+    numberOfActivePrizes,
+    handleSelectPrize,
+    handleDeselectPrize,
+    handleMemoChange,
+}: SelectPrizeNumStepProps) {
+
+    // 選択済みの景品数
+    const selectedPrizesCount = activePrizes.filter(p => p.isSelected).length;
+    // 残りの未選択の景品数
+    const remainingPrizesCount = numberOfActivePrizes - selectedPrizesCount;
+    // 全て選択済みか
+    const allPrizesSelected = remainingPrizesCount === 0;
+
+    // 景品番号順にソートされた有効な景品リスト（グリッド表示用）
+    const sortedActivePrizes = useMemo(() => {
+        return [...activePrizes].sort((a, b) => (a.prizeNum || 0) - (b.prizeNum || 0));
+    }, [activePrizes]);
+
+    return (
+        <div className="p-6 md:p-8">
+            <h2 className="text-2xl font-semibold text-gray-700 mb-2">Step 3: 景品番号選択</h2>
+            <p className="text-gray-600 text-lg mb-4">ビンゴした人が引換番号を選択します。クリックで選択、ダブルクリックで解除できます。</p>
+
+            {/* --- 上部：情報 --- */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 p-4 bg-gray-100 rounded-lg">
+                <div className="flex flex-col justify-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-md font-medium text-gray-500">参加人数</span>
+                    <span className="text-2xl font-bold text-gray-800">{numberOfPeople}</span>
+                </div>
+                <div className="flex flex-col justify-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-md font-medium text-gray-500">景品数</span>
+                    <span className="text-2xl font-bold text-blue-600">{numberOfActivePrizes}</span>
+                </div>
+                <div className="flex flex-col justify-center p-3 bg-white rounded-lg shadow-sm">
+                    <span className="text-md font-medium text-gray-500">残り (未選択)</span>
+                    <span className={`text-2xl font-bold ${remainingPrizesCount > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                        {remainingPrizesCount}
+                    </span>
+                </div>
+            </div>
+
+            {/* --- 中部：景品番号グリッド --- */}
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                {sortedActivePrizes.map(prize => (
+                    <PrizeNumberBox
+                        key={prize.id}
+                        prize={prize}
+                        onSelect={handleSelectPrize}
+                        onDeselect={handleDeselectPrize}
+                        onMemoChange={handleMemoChange}
+                    />
+                ))}
+            </div>
+
+            {/* --- 警告メッセージ --- */}
+            {!allPrizesSelected && (
+                <div className="mt-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
+                    <p className="font-semibold">
+                        すべての景品が選択されると、景品発表に移れます。
+                    </p>
+                </div>
+            )}
+
+            {/* --- 下部：決定ボタン（次のステップへ） --- */}
+            <div className="mt-8 text-right">
+                <button
+                    onClick={() => setCurrentStep("AnnouncePrize")}
+                    disabled={!allPrizesSelected} // 全て選択されるまで無効
+                    className="px-8 py-3 bg-green-600 text-lg text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                    景品発表へ移る
+                </button>
+            </div>
+        </div>
+    );
+}
+export default SelectPrizeNumStep
+
+
+// ============================================================
+// 景品番号ボックス（並べるもの）
+// ============================================================
+
+function PrizeNumberBox({ prize, onSelect, onDeselect, onMemoChange }: {
+    prize: PrizeObject;
+    onSelect: (prizeNum: number) => void;
+    onDeselect: (prizeNum: number) => void;
+    onMemoChange: (prizeNum: number, memo: string) => void;
+}) {
+    const prizeNum = prize.prizeNum!; // このステップでは必ず存在する
+    const isSelected = prize.isSelected;
+
+    const handleClick = () => {
+        if (!isSelected) {
+            onSelect(prizeNum);
+        }
+    };
+
+    const handleDoubleClick = () => {
+        if (isSelected) {
+            onDeselect(prizeNum);
+        }
+    };
+
+    return (
+        <div className="flex flex-col">
+            {/* 景品番号ボタン */}
+            <button
+                onClick={handleClick}
+                onDoubleClick={handleDoubleClick}
+                className={`relative flex items-center justify-center h-20 w-full rounded-lg border-2 transition-all duration-200
+            ${isSelected
+                        ? 'bg-gray-300 border-gray-400 text-gray-500 cursor-not-allowed shadow-inner' // 選択済み
+                        : 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200 hover:border-blue-400 cursor-pointer shadow-sm' // 未選択
+                    }`}
+            >
+                <span className="text-3xl font-bold">{prizeNum}</span>
+                {isSelected && <CheckIcon className="w-6 h-6 absolute top-1 right-1 text-gray-600" />}
+            </button>
+
+            {/* 選択済みの場合はメモ欄を表示 */}
+            {isSelected && (
+                <input
+                    type="text"
+                    value={prize.memo}
+                    onChange={(e) => onMemoChange(prizeNum, e.target.value)}
+                    placeholder="メモ (例: 学籍番号)"
+                    className="w-full mt-2 p-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                />
+            )}
+        </div>
+    );
+}
+</file>
+
+<file path="bingo-num-app/hooks/useBingoState.ts">
+// bingo-num-app/hooks/useBingoState.ts
+
+// ============================================================
+// すべてのハンドラーを統合した useBingoState フック
+// 1つのファイルにロジックを集約することで、「データがどこでどのように更新されているか」が
+// このファイルを見るだけで完結する。
+// ============================================================
+
+import type { PrizeObject, Step } from '@/types';
+import { DragEndEvent } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
+import { useMemo, useState } from 'react';
+import { useBeforeUnload } from "react-use"; // 誤リロード防止用
+
+export const useBingoState = () => {
+    // ============================================================
+    // アプリケーション全体の状態 (State)
+    // ============================================================
+
+    // アプリの現在のステップを管理
+    const [currentStep, setCurrentStep] = useState<Step>("prizeInput");
+    // すべての景品オブジェクトのリストを管理
+    const [prizeObjectList, setPrizeObjectList] = useState<PrizeObject[]>([]);
+    // 参加人数を管理
+    const [numberOfPeople, setNumberOfPeople] = useState<number>(0);
+    // アプリの状態管理（誤リロード防止用）
+    const [isProgress, setIsProgress] = useState<boolean>(false);
+
+    // 誤リロード防止処理（リロードやページを閉じようとしたらアラートが出現）
+    useBeforeUnload(isProgress);
+
+
+    // ============================================================
+    // 派生状態 (Derived State - useMemoで最適化)
+    // ============================================================
+
+    // 除外されていない景品（有効な景品）のリスト
+    const activePrizes = useMemo(
+        () => prizeObjectList.filter((prize) => !prize.isExcluded),
+        [prizeObjectList]
+    );
+
+    // 有効な景品数
+    const numberOfActivePrizes = activePrizes.length;
+
+
+    // ============================================================
+    // グローバルアクション
+    // ============================================================
+
+    /**
+     * アプリの状態を初期化（リセット）する関数
+     **/
+    const resetApp = () => {
+        if (window.confirm("最初からやり直しますか？すべてのデータがリセットされます。")) {
+            setCurrentStep("prizeInput");
+            setPrizeObjectList([]);
+            setNumberOfPeople(0);
+            setIsProgress(false);
+        }
+    };
+
+
+    // ============================================================
+    // Step 2 用のハンドラー (参加人数入力 & 景品数調整)
+    // ============================================================
+
+    /**
+     * 景品の「除外」「復元」をトグルする
+     * @param id トグル対象の景品ID
+     **/
+    const toggleExcludePrize = (id: string) => {
+        setPrizeObjectList(prevList => {
+            // 対象の景品のisExcludedを反転
+            return prevList.map(prize =>
+                prize.id === id ? { ...prize, isExcluded: !prize.isExcluded } : prize
+            );
+        });
+    };
+
+    /**
+     * ドラッグ＆ドロップ終了時の処理 (発表順の並べ替え)
+     * @param event DNDイベント
+     **/
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (over && active.id !== over.id) {
+            setPrizeObjectList((items) => {
+                const oldIndex = items.findIndex((item) => item.id === active.id);
+                const newIndex = items.findIndex((item) => item.id === over.id);
+
+                // arrayMoveで並べ替え後、displayOrderNumをインデックスに基づいて再割り当て
+                return arrayMove(items, oldIndex, newIndex).map((item, index) => ({
+                    ...item,
+                    displayOrderNum: index + 1,
+                }));
+            });
+        }
+    };
+
+
+    // ============================================================
+    // Step 3 用のハンドラー (景品番号選択)
+    // ============================================================
+
+    /**
+     * 景品番号をクリック（選択）
+     * @param prizeNum 選択された景品番号
+     **/
+    const handleSelectPrize = (prizeNum: number) => {
+        setPrizeObjectList(prevList =>
+            prevList.map(prize =>
+                prize.prizeNum === prizeNum ? { ...prize, isSelected: true } : prize
+            )
+        );
+    };
+
+    /**
+     * 景品番号をダブルクリック（選択解除）
+     * @param prizeNum 解除された景品番号
+     **/
+    const handleDeselectPrize = (prizeNum: number) => {
+        setPrizeObjectList(prevList =>
+            prevList.map(prize =>
+                // 選択解除時はメモもリセットする
+                prize.prizeNum === prizeNum ? { ...prize, isSelected: false, memo: "" } : prize
+            )
+        );
+    };
+
+    /**
+     * メモ欄の更新
+     * @param prizeNum 対象の景品番号
+     * @param memo 入力されたメモ
+     **/
+    const handleMemoChange = (prizeNum: number, memo: string) => {
+        setPrizeObjectList(prevList =>
+            prevList.map(prize =>
+                prize.prizeNum === prizeNum ? { ...prize, memo: memo } : prize
+            )
+        );
+    };
+
+
+    // ============================================================
+    // Step 4 用のハンドラー (景品発表)
+    // ============================================================
+
+    /**
+     * 景品（発表順リスト）をクリック（発表）
+     * @param id 発表する景品のID
+     **/
+    const handleAnnouncePrize = (id: string) => {
+        setPrizeObjectList(prevList =>
+            prevList.map(prize =>
+                prize.id === id ? { ...prize, isAnnounced: true } : prize
+            )
+        );
+    };
+
+    /**
+     * 景品（発表順リスト）をダブルクリック（発表取り消し）
+     * @param id 取り消す景品のID
+     **/
+    const handleUnannouncePrize = (id: string) => {
+        setPrizeObjectList(prevList =>
+            prevList.map(prize =>
+                prize.id === id ? { ...prize, isAnnounced: false } : prize
+            )
+        );
+    };
+
+    // ============================================================
+    // 戻り値 (コンポーネントで必要なものを全てエクスポート)
+    // ============================================================
+    return {
+        // State
+        currentStep, // アプリの現在のステップ
+        setCurrentStep,
+        prizeObjectList, // すべての景品オブジェクトのリスト
+        setPrizeObjectList,
+        numberOfPeople, // 参加人数
+        setNumberOfPeople,
+        setIsProgress, // アプリの状態
+
+        // Derived State
+        activePrizes, // 有効な景品のリスト
+        numberOfActivePrizes, // 有効な景品数
+
+        // Actions & Handlers
+        resetApp, // アプリの状態をリセット
+        toggleExcludePrize, // 景品の「除外」・「復元」を切り替える
+        handleDragEnd, // ドラッグ＆ドロップ終了時
+        handleSelectPrize, // 景品選択
+        handleDeselectPrize, // 景品選択状態解除
+        handleMemoChange, // メモ欄の更新
+        handleAnnouncePrize, // 景品発表
+        handleUnannouncePrize, // 景品発表状態解除
+    };
+};
+</file>
+
+<file path="bingo-num-app/types/index.ts">
+// bingo-num-app/types/index.ts
+
+// --- 型定義 ---
+
+// ============================================================
+// 景品オブジェクトの型
+// ============================================================
+export type PrizeObject = {
+    id: string; // dnd-kit用の一意のID
+    prizeName: string; // 景品名
+    prizeNum: number | null; // 景品番号 (引換番号)
+    displayOrderNum: number; // 景品発表順
+    isSelected: boolean; // 景品番号が選択されたか (Step 3)
+    isAnnounced: boolean; // 景品が発表されたか (Step 4)
+    isExcluded: boolean; // 景品が除外されたか (Step 2)
+    memo: string; // メモ (Step 3)
+};
+
+
+// ============================================================
+// アプリの現在のステップを示す型
+// ============================================================
+
+export type Step = "prizeInput" | "peopleInput" | "selectPrizeNum" | "AnnouncePrize";
+</file>
+
+<file path="bingo-num-app/utils/shuffle.ts">
+// bingo-num-app/utils/shuffle.ts
+
+// ============================================================
+// 【Fisher-Yates (Knuth) シャッフルアルゴリズム】
+// 配列をランダムに並べ替えるために使用します。
+// @param array シャッフル対象の配列
+// @returns シャッフル後の新しい配列
+// ============================================================
+
+export const fisherYatesShuffle = <T,>(array: T[]): T[] => {
+    const newArray = [...array]; // 元の配列をコピー
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        // ES6の分割代入を使用して要素を交換
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+};
+</file>
+
+<file path="bingo-num-app/app/globals.css">
+@import "tailwindcss";
+
+:root {
+    --background: #ffffff;
+    --foreground: #171717;
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    --font-family: var(--font-noto-sans-jp);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-noto-sans-jp), Arial, Helvetica, sans-serif;
+}
+</file>
+
+<file path="bingo-num-app/app/layout.tsx">
+import type { Metadata } from "next";
+import { Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
+});
+
+const notoSansJP = Noto_Sans_JP({
+    variable: "--font-noto-sans-jp",
+    subsets: ["latin"],
+    weight: ["100", "300", "400", "500", "700", "900"],
+    display: "swap",
+});
+
+export const metadata: Metadata = {
+    title: "Bingo Num App",
+    description: "自由ヶ丘執行委員会のビンゴで使用する番号を管理するアプリです",
+};
+
+export default function RootLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return (
+        <html lang="ja">
+            <body
+                className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}
+            >
+                {children}
+            </body>
+        </html>
+    );
+}
+</file>
+
+<file path="bingo-num-app/eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+    ...nextVitals,
+    ...nextTs,
+    // Override default ignores of eslint-config-next.
+    globalIgnores([
+        // Default ignores of eslint-config-next:
+        ".next/**",
+        "out/**",
+        "build/**",
+        "next-env.d.ts",
+    ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="bingo-num-app/next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+    /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="bingo-num-app/postcss.config.mjs">
+const config = {
+    plugins: {
+        "@tailwindcss/postcss": {},
+    },
+};
+
+export default config;
+</file>
+
+<file path="bingo-num-app/tsconfig.json">
+{
+    "compilerOptions": {
+        "target": "ES2017",
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        "incremental": true,
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "paths": {
+            "@/*": [
+                "./*"
+            ]
+        }
+    },
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        ".next/types/**/*.ts",
+        ".next/dev/types/**/*.ts",
+        "**/*.mts",
+        ".next\\dev/types/**/*.ts",
+        ".next\\dev/types/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
+</file>
+
+<file path="bingo-num-app/app/page.tsx">
+// bingo-num-app/app/page.tsx
+
+"use client";
+
+// Heroicons ライブラリのインポート（アイコン用）
+import { ArrowUturnLeftIcon } from '@heroicons/react/24/outline';
+// カスタムフック
+import { useBingoState } from '@/hooks/useBingoState';
+// Step コンポーネント
+import AnnouncePrizeStep from '@/components/steps/AnnouncePrizeStep'; // Step 4 景品発表
+import PeopleInputStep from '@/components/steps/PeopleInputStep'; // Step 2 人数入力
+import PrizeInputStep from '@/components/steps/PrizeInputStep'; // Step 1 景品入力
+import SelectPrizeNumStep from '@/components/steps/SelectPrizeNumStep'; // Step 3 景品番号選択
+
+// ============================================================
+// 【アプリメインコンポーネント】
+// ============================================================
+
+export default function Home() {
+
+    // useBingoState フックからステートとハンドラを受け取る
+    const {
+        // --- State ---
+        currentStep, // アプリの現在のステップ
+        setCurrentStep,
+        prizeObjectList, // すべての景品オブジェクトのリスト
+        setPrizeObjectList,
+        numberOfPeople, // 参加人数
+        setNumberOfPeople,
+        setIsProgress, // アプリの状態
+
+        // --- Derived State ---
+        activePrizes, // 有効な景品のリスト
+        numberOfActivePrizes, // 有効な景品数
+
+        // --- Actions & Handlers ---
+        resetApp, // アプリの状態をリセット
+
+        // Step 2
+        toggleExcludePrize, // 景品の「除外」・「復元」を切り替える
+        handleDragEnd, // ドラッグ＆ドロップ終了時
+        // Step 3
+        handleSelectPrize, // 景品選択
+        handleDeselectPrize, // 景品選択状態解除
+        handleMemoChange, // メモ欄の更新
+        // Step 4
+        handleAnnouncePrize, // 景品発表
+        handleUnannouncePrize, // 景品発表状態解除
+
+    } = useBingoState()
+
+    // ------------------------------------------------------------
+    // 現在のステップに応じて表示するコンポーネントを切り替える
+    // ------------------------------------------------------------
+
+    const renderStep = () => {
+        switch (currentStep) {
+
+            // --- Step 1 景品入力 ---
+            case "prizeInput":
+                return (
+                    <PrizeInputStep
+                        setIsProgress={setIsProgress}
+                        setPrizeObjectList={setPrizeObjectList}
+                        setCurrentStep={setCurrentStep}
+                    />
+                );
+
+            // --- Step 2 人数入力 ---
+            case "peopleInput":
+                return (
+                    <PeopleInputStep
+                        prizeObjectList={prizeObjectList}
+                        setPrizeObjectList={setPrizeObjectList}
+                        numberOfPeople={numberOfPeople}
+                        setNumberOfPeople={setNumberOfPeople}
+                        setCurrentStep={setCurrentStep}
+                        activePrizes={activePrizes}
+                        numberOfActivePrizes={numberOfActivePrizes}
+                        // ハンドラーを渡す
+                        toggleExcludePrize={toggleExcludePrize}
+                        handleDragEnd={handleDragEnd}
+                    />
+                );
+
+            // --- Step 3 景品番号選択 ---
+            case "selectPrizeNum":
+                return (
+                    <SelectPrizeNumStep
+                        prizeObjectList={prizeObjectList}
+                        setPrizeObjectList={setPrizeObjectList}
+                        numberOfPeople={numberOfPeople}
+                        setCurrentStep={setCurrentStep}
+                        activePrizes={activePrizes}
+                        numberOfActivePrizes={numberOfActivePrizes}
+                        // ハンドラーを渡す
+                        handleSelectPrize={handleSelectPrize}
+                        handleDeselectPrize={handleDeselectPrize}
+                        handleMemoChange={handleMemoChange}
+                    />
+                );
+
+            // --- Step 4 景品発表 ---
+            case "AnnouncePrize":
+                return (
+                    <AnnouncePrizeStep
+                        prizeObjectList={prizeObjectList}
+                        setPrizeObjectList={setPrizeObjectList}
+                        numberOfPeople={numberOfPeople}
+                        activePrizes={activePrizes}
+                        numberOfActivePrizes={numberOfActivePrizes}
+                        // ハンドラーを渡す
+                        handleAnnouncePrize={handleAnnouncePrize}
+                        handleUnannouncePrize={handleUnannouncePrize}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
+
+    // ------------------------------------------------------------
+    // レンダリング
+    // ------------------------------------------------------------
+
+    return (
+        <main className="flex min-h-screen flex-col items-center justify-start p-6 md:px-12 md:py-6 lg:px-24 lg:py-6 bg-gray-50 font-sans text-gray-900">
+            {/* --- ヘッダー --- */}
+            <div className="z-10 w-full max-w-4xl items-center justify-between lg:flex mb-4">
+                <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
+                    景品番号管理アプリ
+                </h1>
+                {/* リセットボタン */}
+                <button
+                    onClick={resetApp}
+                    className="flex items-center gap-2 mt-4 lg:mt-0 px-4 py-2 bg-red-500 text-lg text-white rounded-lg shadow-md hover:bg-red-600 transition-colors duration-200"
+                >
+                    <ArrowUturnLeftIcon className="w-5 h-5" />
+                    リセット
+                </button>
+            </div>
+
+            {/* --- メインコンテンツ（ステップごと） --- */}
+            <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden">
+                {renderStep()}
+            </div>
+
+            {/* --- フッター --- */}
+            <footer className="mt-10 text-center text-gray-500 text-sm">
+                <p>愛知工業大学 自由ヶ丘執行委員会</p>
+            </footer>
+        </main>
+    );
+}
+</file>
+
+<file path="bingo-num-app/package.json">
+{
+    "name": "bingo-num-app",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "eslint"
+    },
+    "dependencies": {
+        "@dnd-kit/core": "^6.3.1",
+        "@dnd-kit/sortable": "^10.0.0",
+        "@heroicons/react": "^2.2.0",
+        "next": "16.0.10",
+        "react": "19.2.0",
+        "react-dom": "19.2.0",
+        "react-use": "^17.6.0"
+    },
+    "devDependencies": {
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "16.0.0",
+        "tailwindcss": "^4",
+        "typescript": "^5"
+    }
+}
+</file>
+
+<file path="README.md">
+# 景品番号管理アプリ (Bingo Num App)
+
+イベント（ビンゴ大会など）で使用する景品の引換番号と、対応する景品名を管理するためのWebアプリケーションです。
+
+## 開発の背景と課題意識
+
+従来の手作業によるビンゴの番号割り当てでは、以下のような問題点がありました。
+
+* **人数の変動への対応:** イベントの「参加人数 < 景品数」となる場合が多く、目玉景品を確実に排出するための手動調整（10人参加の場合の配置、11人の場合の配置…など）が非常に煩雑でした。
+* **人為的ミスの発生:** 当日の想定外の人数変動に対し、その場で手動で番号を割り当て直す必要があり、設定箇所の多さからミスを完全に防ぐことが困難でした。
+
+本アプリは、これらの「管理の煩雑さ」と「人為的なオペレーションミス」を**プログラムによって完全に防ぎ、公平かつ確実なイベント運営を実現するため**に開発されました。
+
+---
+
+## イベント運営のアプローチ（仕様の前提）
+
+本アプリでは、エラーや矛盾を防ぐため **`参加者数 ≧ 景品数` である場合のみ**処理を実行できるという厳格な仕様を設けています。
+
+イベント当日に「参加人数 < 景品数」となった場合は、**本番その場で景品数と参加者数を物理的に合わせる**（景品を除外する）アプローチを取ります。
+
+**【当日の進行例】**
+> 「今回は想定よりも参加人数が少ないため、比較的に価値の低い景品はプールから除外し、次回以降のイベントに持ち越します。除外予定の景品の中で、今回のビンゴに含めたいものはありますか？」
+
+このように参加者の前で確認を取り、ドラッグ＆ドロップで除外設定を行うことで、システム上でも現実でも「参加者数 ≧ 景品数」の状態を担保します。（※食品やシーズンアイテム、高額・人気景品は優先的に残すなどの運用ルールと併用します）
+
+**【現行仕様の制限（デメリット）】**
+* 1人につき最大1点の当選となります（1人2点当選は不可/システムで意図的に想定していない）。
+* 参加者数 ＜ 景品数の場合、参加者の目の前で景品を除外するプロセスが発生します。
+
+---
+
+## 主な特徴と操作フロー
+
+処理の流れを4つのステップに分け、SPA（シングルページアプリケーション）として直感的に操作できます。
+
+1. **Step 1: 景品入力**
+   景品リストを改行区切りで入力します。
+2. **Step 2: 人数入力 & 調整**
+   参加人数を入力し、景品リストの発表順をドラッグ＆ドロップで並べ替えます。参加人数より景品が多い場合は、景品を「除外」して数を調整します。
+3. **Step 3: 番号選択**
+   ビンゴした人が選んだ引換番号をクリックして選択状態にし、メモ（当選者名や学籍番号など）を記録します。
+4. **Step 4: 景品発表**
+   発表順リストをクリックすることで、対応する引換番号と景品名が公開されます。
+
+---
+
+## 主な用語について
+
+* **景品数 / 参加人数:** ビンゴ開始前に必ず再確認します。途中参加は仕様上不可能です。
+* **引換番号:** 1～有効な景品数までの番号。ビンゴした人は一度だけ選択可能です。
+* **当選番号 (内部処理):** 引換番号に対応してランダムに割り当てられる番号。景品発表の際に初めて判明します。
+
+---
+
+## 公平性について
+
+引換番号と景品を紐付ける処理には、**Fisher-Yates shuffle**（フィッシャー・イェーツのシャッフル）アルゴリズムを採用し、完全な公平性を確保しています。
+
+これは現実の「くじ引き（箱の中にすべての番号札を入れて見えないように混ぜ、1枚ずつ引いていく）」と全く同じことをプログラムで行う手法です。特定の番号が出やすくなるような偏り（バイアス）は数学的に発生しません。
+
+※ 当選番号の処理に疑問がある場合は、本リポジトリのソースコード（`utils/shuffle.ts` 等）をご参照ください。
+
+---
+
+## 技術スタック
+
+本アプリケーションはフロントエンドのみで構成され、状態管理にはReact Hooks（`useState`, `useMemo`）を活用しています。
+
+* **フレームワーク:** Next.js (App Router)
+* **言語:** TypeScript
+* **スタイリング:** Tailwind CSS
+* **主要ライブラリ:**
+  * `@dnd-kit/core`, `@dnd-kit/sortable`: ドラッグ＆ドロップによる並べ替え機能
+  * `@heroicons/react`: UIアイコン
+  * `react-use`: 誤リロード防止機能（`useBeforeUnload`）
+
+---
+
+## セットアップと実行方法
+
+1. リポジトリをクローンします:
+```bash
+git clone [リポジトリURL]
+cd [リポジトリ名]/bingo-num-app
+```
+
+2. 依存関係をインストールします:
+```bash
+npm install
+```
+
+3. 開発サーバーを起動します:
+```bash
+npm run dev
+```
+
+4. ブラウザで `http://localhost:3000` にアクセスします。
+
+## デプロイ
+
+このアプリケーションはNext.jsプロジェクトとして、Vercelへのデプロイに最適化されています。
+
+## 補足
+
+- `localStorage` による値の保持は、アプリの規模と目的からしてオーバーエンジニアリングとなるため実装していません。
+  - また、値を保持できると都合のいい状態で保持してウィンドウを差し替えることも可能となるため、公平性の観点からも不要だと判断しています。
+
+## ディレクトリ構成
+
+保守性と可読性を高めるため、機能や責務ごとにファイルを分割しています。
+
+```text
+ziyuu-sikkou-bingo-num
+├─ bingo-num-app
+│  ├─ app
+│  │  ├─ layout.tsx
+│  │  └─ page.tsx             # メインのオーケストレーター
+│  ├─ components
+│  │  └─ steps                # 各ステップのUIコンポーネント
+│  │     ├─ PrizeInputStep.tsx
+│  │     ├─ PeopleInputStep.tsx
+│  │     ├─ SelectPrizeNumStep.tsx
+│  │     └─ AnnouncePrizeStep.tsx
+│  ├─ hooks
+│  │  └─ useBingoState.ts     # 状態管理とビジネスロジック
+│  ├─ types
+│  │  └─ index.ts             # 型定義
+│  └─ utils
+│     └─ shuffle.ts           # シャッフルなどの純粋関数
+```
+</file>
+
+</files>
