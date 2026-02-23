@@ -2,6 +2,8 @@
 
 イベント（ビンゴ大会など）で使用する景品の引換番号と、対応する景品名を管理するためのWebアプリケーションです。
 
+<img width="745" height="980" alt="image" src="https://github.com/user-attachments/assets/448769a8-a333-4b7f-b2f5-db08797cbc49" />
+
 ## 開発の背景と課題意識
 
 従来の手作業によるビンゴの番号割り当てでは、以下のような問題点がありました。
