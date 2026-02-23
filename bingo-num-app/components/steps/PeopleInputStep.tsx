@@ -224,6 +224,7 @@ function SortablePrizeItem({ prize, toggleExcludePrize }: { prize: PrizeObject; 
                 <button
                     {...attributes} // DND属性
                     {...listeners} // DNDリスナー
+                    aria-label="並べ替え用のドラッグハンドル"
                     className={`cursor-grab touch-none p-2 rounded ${isExcluded ? 'text-gray-500 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-100'}`}
                     disabled={isExcluded} // 除外中はDND不可
                 >

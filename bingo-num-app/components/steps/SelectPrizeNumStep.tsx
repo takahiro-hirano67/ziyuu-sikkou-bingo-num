@@ -7,8 +7,6 @@ import { useMemo } from "react";
 import { CheckIcon } from '@heroicons/react/24/outline';
 // 型定義
 import type { PrizeObject, Step } from "@/types";
-// カスタムフック
-import { useBingoState } from '@/hooks/useBingoState';
 
 // ============================================================
 // 【ステップ3: 景品番号選択コンポーネント】
@@ -24,6 +22,9 @@ interface SelectPrizeNumStepProps {
     setCurrentStep: React.Dispatch<React.SetStateAction<Step>>;
     activePrizes: PrizeObject[];
     numberOfActivePrizes: number;
+    handleSelectPrize: (prizeNum: number) => void; // 景品選択
+    handleDeselectPrize: (prizeNum: number) => void; // 景品選択状態解除
+    handleMemoChange: (prizeNum: number, memo: string) => void; // メモ欄の更新
 }
 
 function SelectPrizeNumStep({
@@ -31,15 +32,11 @@ function SelectPrizeNumStep({
     numberOfPeople,
     setCurrentStep,
     activePrizes,
-    numberOfActivePrizes
+    numberOfActivePrizes,
+    handleSelectPrize,
+    handleDeselectPrize,
+    handleMemoChange,
 }: SelectPrizeNumStepProps) {
-
-    // useBingoState フックからハンドラを取得
-    const {
-        handleSelectPrize, // 景品選択
-        handleDeselectPrize, // 景品選択状態解除
-        handleMemoChange, // メモ欄の更新
-    } = useBingoState();
 
     // 選択済みの景品数
     const selectedPrizesCount = activePrizes.filter(p => p.isSelected).length;
@@ -101,7 +98,7 @@ function SelectPrizeNumStep({
             {/* --- 下部：決定ボタン（次のステップへ） --- */}
             <div className="mt-8 text-right">
                 <button
-                    onClick={() => setCurrentStep("AnnouncePrize")}
+                    onClick={() => setCurrentStep("announcePrize")}
                     disabled={!allPrizesSelected} // 全て選択されるまで無効
                     className="px-8 py-3 bg-green-600 text-lg text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >

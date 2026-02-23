@@ -21,4 +21,4 @@ export type PrizeObject = {
 // アプリの現在のステップを示す型
 // ============================================================
 
-export type Step = "prizeInput" | "peopleInput" | "selectPrizeNum" | "AnnouncePrize";
+export type Step = "prizeInput" | "peopleInput" | "selectPrizeNum" | "announcePrize";

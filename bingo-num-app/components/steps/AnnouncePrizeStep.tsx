@@ -5,8 +5,6 @@
 import { useMemo } from "react";
 // 型定義
 import type { PrizeObject } from "@/types";
-// カスタムフック
-import { useBingoState } from '@/hooks/useBingoState';
 
 // ============================================================
 // 【ステップ4：景品発表コンポーネント】
@@ -20,21 +18,18 @@ interface AnnouncePrizeStepProps {
     numberOfPeople: number;
     activePrizes: PrizeObject[];
     numberOfActivePrizes: number;
+    handleAnnouncePrize: (id: string) => void; // 景品発表
+    handleUnannouncePrize: (id: string) => void; // 景品発表状態解除
 }
 
 function AnnouncePrizeStep({
     setPrizeObjectList,
     numberOfPeople,
     activePrizes,
-    numberOfActivePrizes
+    numberOfActivePrizes,
+    handleAnnouncePrize,
+    handleUnannouncePrize,
 }: AnnouncePrizeStepProps) {
-
-    // useBingoState フックからハンドラを取得
-    const {
-        handleAnnouncePrize, // 景品発表
-        handleUnannouncePrize, // 景品発表状態解除
-    } = useBingoState();
-
 
     // 発表済みの景品数
     const announcedPrizesCount = activePrizes.filter(p => p.isAnnounced).length;

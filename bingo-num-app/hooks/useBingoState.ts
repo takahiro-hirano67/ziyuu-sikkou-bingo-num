@@ -6,11 +6,11 @@
 // このファイルを見るだけで完結する。
 // ============================================================
 
-import { useState, useMemo } from 'react';
-import { useBeforeUnload } from "react-use"; // 誤リロード防止用
+import type { PrizeObject, Step } from '@/types';
 import { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import type { PrizeObject, Step } from '@/types';
+import { useMemo, useState } from 'react';
+import { useBeforeUnload } from "react-use"; // 誤リロード防止用
 
 export const useBingoState = () => {
     // ============================================================

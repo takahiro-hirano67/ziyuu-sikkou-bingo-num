@@ -101,7 +101,7 @@ export default function Home() {
                 );
 
             // --- Step 4 景品発表 ---
-            case "AnnouncePrize":
+            case "announcePrize":
                 return (
                     <AnnouncePrizeStep
                         prizeObjectList={prizeObjectList}
