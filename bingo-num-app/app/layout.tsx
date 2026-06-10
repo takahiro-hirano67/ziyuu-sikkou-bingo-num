@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     description: "自由ヶ丘執行委員会のビンゴで使用する番号を管理するアプリです",
 };
 
+/**
+ * トップレベルのレイアウト
+ */
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -31,9 +34,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="ja">
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}
-            >
+            <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} antialiased`}>
                 {children}
             </body>
         </html>

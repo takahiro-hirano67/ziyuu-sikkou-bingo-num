@@ -1,28 +1,21 @@
-// bingo-num-app/components/steps/PeopleInputStep.tsx
-
-"use client"
+"use client";
 
 // DND-Kit ライブラリのインポート
-import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { DragEndEvent } from '@dnd-kit/core';
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import {
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { DragEndEvent } from "@dnd-kit/core";
 // Heroicons ライブラリのインポート（アイコン用）
-import { ArrowUturnLeftIcon, Bars3Icon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ArrowUturnLeftIcon, Bars3Icon, CheckIcon, TrashIcon } from "@heroicons/react/24/outline";
 // 型定義
-import type { PrizeObject, Step } from '@/types';
+import type { PrizeObject, Step } from "@/types";
 // 配列シャッフル処理
-import { fisherYatesShuffle } from '@/utils/shuffle';
-
-
-// ============================================================
-// 【ステップ2：参加人数入力 & 景品数調整コンポーネント】
-// ポイント:
-// - 参加人数を入力し、景品リストの発表順をドラッグ＆ドロップで並べ替える。
-// - 参加人数より景品が多い場合は、景品を除外して数を調整するよう誘導。
-// （参加人数より景品が多い場合はそもそも実行しない。）
-// ============================================================
-
+import { fisherYatesShuffle } from "@/utils/shuffle";
 interface PeopleInputStepProps {
     prizeObjectList: PrizeObject[];
     setPrizeObjectList: React.Dispatch<React.SetStateAction<PrizeObject[]>>;
@@ -35,7 +28,14 @@ interface PeopleInputStepProps {
     handleDragEnd: (event: DragEndEvent) => void; // ドラッグ＆ドロップ終了時
 }
 
-
+/**
+ * ステップ2：参加人数入力 & 景品数調整コンポーネント
+ *
+ * ポイント
+ * - 参加人数を入力し、景品リストの発表順をドラッグ＆ドロップで並べ替える。
+ * - 参加人数より景品が多い場合は、景品を除外して数を調整するよう誘導。
+ * （参加人数より景品が多い場合はそもそも実行しない。）
+ */
 function PeopleInputStep({
     prizeObjectList,
     setPrizeObjectList,
@@ -47,7 +47,6 @@ function PeopleInputStep({
     toggleExcludePrize,
     handleDragEnd,
 }: PeopleInputStepProps) {
-
     // 除外された景品数
     const excludedPrizesCount = prizeObjectList.length - numberOfActivePrizes;
 
@@ -59,7 +58,7 @@ function PeopleInputStep({
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates,
-        })
+        }),
     );
 
     // ------------------------------------------------------------
@@ -87,14 +86,14 @@ function PeopleInputStep({
         });
 
         // 5. 元のリスト（prizeObjectList）を更新
-        setPrizeObjectList(prevList =>
-            prevList.map(prize => {
+        setPrizeObjectList((prevList) =>
+            prevList.map((prize) => {
                 // MapにIDが存在（＝有効な景品）なら、景品番号を設定
                 if (prizedMap.has(prize.id)) {
                     return { ...prize, prizeNum: prizedMap.get(prize.id)! };
                 }
                 return prize; // 除外された景品は prizeNum: null のまま
-            })
+            }),
         );
 
         setCurrentStep("selectPrizeNum"); // 次のステップへ
@@ -115,7 +114,7 @@ function PeopleInputStep({
                         id="peopleInput"
                         type="number"
                         min={0}
-                        value={numberOfPeople === 0 ? '' : numberOfPeople} // 0の場合は空表示
+                        value={numberOfPeople === 0 ? "" : numberOfPeople} // 0の場合は空表示
                         onChange={(e) => setNumberOfPeople(Math.max(0, parseInt(e.target.value) || 0))}
                         className="w-full p-3 text-lg border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
                         placeholder="例: 10"
@@ -137,7 +136,9 @@ function PeopleInputStep({
             {!canProceed && (
                 <div className="mb-4 p-4 text-lg bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg">
                     <p className="font-semibold">
-                        {numberOfPeople <= 0 ? "参加人数を入力してください。" : "参加人数が有効な景品数以上である必要があります。"}
+                        {numberOfPeople <= 0
+                            ? "参加人数を入力してください。"
+                            : "参加人数が有効な景品数以上である必要があります。"}
                     </p>
                     <p className="text-md">
                         （ 現在：{numberOfPeople} (参加人数) vs {numberOfActivePrizes} (景品数) ）
@@ -147,16 +148,14 @@ function PeopleInputStep({
 
             {/* --- 下部：景品リスト (DND) --- */}
             <h3 className="text-xl font-semibold text-gray-700 mb-2">景品リスト (発表順)</h3>
-            <p className="text-md text-gray-500 mb-4">ドラッグ&ドロップで発表順を変更できます。参加人数より景品が多い場合は「除外」してください。</p>
+            <p className="text-md text-gray-500 mb-4">
+                ドラッグ&ドロップで発表順を変更できます。参加人数より景品が多い場合は「除外」してください。
+            </p>
 
             <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                >
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext
-                        items={prizeObjectList.map(p => p.id)} // IDの配列を渡す
+                        items={prizeObjectList.map((p) => p.id)} // IDの配列を渡す
                         strategy={verticalListSortingStrategy} // 垂直方向のソート
                     >
                         <ul className="divide-y divide-gray-200">
@@ -180,8 +179,7 @@ function PeopleInputStep({
                 <button
                     onClick={handleSubmit}
                     disabled={!canProceed} // 条件を満たさないと無効
-                    className="flex items-center gap-2 float-right px-8 py-3 mb-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
+                    className="flex items-center gap-2 float-right px-8 py-3 mb-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                     <CheckIcon className="w-5 h-5" />
                     景品番号を割り当て
                 </button>
@@ -189,21 +187,20 @@ function PeopleInputStep({
         </div>
     );
 }
-export default PeopleInputStep
-
+export default PeopleInputStep;
 
 // ============================================================
 // 並べ替え可能な景品リストアイテム
 // ============================================================
 
-function SortablePrizeItem({ prize, toggleExcludePrize }: { prize: PrizeObject; toggleExcludePrize: (id: string) => void; }) {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-    } = useSortable({ id: prize.id }); // IDで紐付け
+function SortablePrizeItem({
+    prize,
+    toggleExcludePrize,
+}: {
+    prize: PrizeObject;
+    toggleExcludePrize: (id: string) => void;
+}) {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: prize.id }); // IDで紐付け
 
     // ドラッグ&ドロップ中のスタイル
     const style = {
@@ -217,34 +214,33 @@ function SortablePrizeItem({ prize, toggleExcludePrize }: { prize: PrizeObject; 
         <li
             ref={setNodeRef} // ドラッグ&ドロップノード参照
             style={style}
-            className={`flex items-center justify-between p-4 ${isExcluded ? 'bg-gray-200 opacity-60' : 'bg-white'}`}
-        >
+            className={`flex items-center justify-between p-4 ${isExcluded ? "bg-gray-200 opacity-60" : "bg-white"}`}>
             <div className="flex items-center gap-4">
                 {/* ドラッグハンドル */}
                 <button
                     {...attributes} // DND属性
                     {...listeners} // DNDリスナー
                     aria-label="並べ替え用のドラッグハンドル"
-                    className={`cursor-grab touch-none p-2 rounded ${isExcluded ? 'text-gray-500 cursor-not-allowed' : 'text-gray-400 hover:bg-gray-100'}`}
+                    className={`cursor-grab touch-none p-2 rounded ${isExcluded ? "text-gray-500 cursor-not-allowed" : "text-gray-400 hover:bg-gray-100"}`}
                     disabled={isExcluded} // 除外中はDND不可
                 >
                     <Bars3Icon className="w-5 h-5" />
                 </button>
                 {/* 発表順 と 景品名 */}
-                <span className={`text-lg font-medium ${isExcluded ? 'text-gray-600 line-through' : 'text-gray-800'}`}>
+                <span className={`text-lg font-medium ${isExcluded ? "text-gray-600 line-through" : "text-gray-800"}`}>
                     {prize.displayOrderNum}. {prize.prizeName}
                 </span>
             </div>
             {/* 除外/復元ボタン */}
             <button
                 onClick={() => toggleExcludePrize(prize.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isExcluded
-                    ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                    : 'bg-red-100 text-red-700 hover:bg-red-200'
-                    }`}
-            >
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isExcluded
+                        ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                        : "bg-red-100 text-red-700 hover:bg-red-200"
+                }`}>
                 {isExcluded ? <ArrowUturnLeftIcon className="w-4 h-4" /> : <TrashIcon className="w-4 h-4" />}
-                {isExcluded ? '復元' : '除外'}
+                {isExcluded ? "復元" : "除外"}
             </button>
         </li>
     );

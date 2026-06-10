@@ -1,17 +1,13 @@
-// bingo-num-app/hooks/useBingoState.ts
-
-// ============================================================
-// すべてのハンドラーを統合した useBingoState フック
-// 1つのファイルにロジックを集約することで、「データがどこでどのように更新されているか」が
-// このファイルを見るだけで完結する。
-// ============================================================
-
-import type { PrizeObject, Step } from '@/types';
-import { DragEndEvent } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
-import { useMemo, useState } from 'react';
+import type { PrizeObject, Step } from "@/types";
+import { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
+import { useMemo, useState } from "react";
 import { useBeforeUnload } from "react-use"; // 誤リロード防止用
 
+/**
+ * すべてのハンドラーを統合した useBingoState フック
+ * 1つのファイルにロジックを集約することで、「データがどこでどのように更新されているか」がこのファイルを見るだけで完結する。
+ */
 export const useBingoState = () => {
     // ============================================================
     // アプリケーション全体の状態 (State)
@@ -29,20 +25,15 @@ export const useBingoState = () => {
     // 誤リロード防止処理（リロードやページを閉じようとしたらアラートが出現）
     useBeforeUnload(isProgress);
 
-
     // ============================================================
     // 派生状態 (Derived State - useMemoで最適化)
     // ============================================================
 
     // 除外されていない景品（有効な景品）のリスト
-    const activePrizes = useMemo(
-        () => prizeObjectList.filter((prize) => !prize.isExcluded),
-        [prizeObjectList]
-    );
+    const activePrizes = useMemo(() => prizeObjectList.filter((prize) => !prize.isExcluded), [prizeObjectList]);
 
     // 有効な景品数
     const numberOfActivePrizes = activePrizes.length;
-
 
     // ============================================================
     // グローバルアクション
@@ -60,7 +51,6 @@ export const useBingoState = () => {
         }
     };
 
-
     // ============================================================
     // Step 2 用のハンドラー (参加人数入力 & 景品数調整)
     // ============================================================
@@ -70,11 +60,9 @@ export const useBingoState = () => {
      * @param id トグル対象の景品ID
      **/
     const toggleExcludePrize = (id: string) => {
-        setPrizeObjectList(prevList => {
+        setPrizeObjectList((prevList) => {
             // 対象の景品のisExcludedを反転
-            return prevList.map(prize =>
-                prize.id === id ? { ...prize, isExcluded: !prize.isExcluded } : prize
-            );
+            return prevList.map((prize) => (prize.id === id ? { ...prize, isExcluded: !prize.isExcluded } : prize));
         });
     };
 
@@ -98,7 +86,6 @@ export const useBingoState = () => {
         }
     };
 
-
     // ============================================================
     // Step 3 用のハンドラー (景品番号選択)
     // ============================================================
@@ -108,10 +95,8 @@ export const useBingoState = () => {
      * @param prizeNum 選択された景品番号
      **/
     const handleSelectPrize = (prizeNum: number) => {
-        setPrizeObjectList(prevList =>
-            prevList.map(prize =>
-                prize.prizeNum === prizeNum ? { ...prize, isSelected: true } : prize
-            )
+        setPrizeObjectList((prevList) =>
+            prevList.map((prize) => (prize.prizeNum === prizeNum ? { ...prize, isSelected: true } : prize)),
         );
     };
 
@@ -120,27 +105,13 @@ export const useBingoState = () => {
      * @param prizeNum 解除された景品番号
      **/
     const handleDeselectPrize = (prizeNum: number) => {
-        setPrizeObjectList(prevList =>
-            prevList.map(prize =>
+        setPrizeObjectList((prevList) =>
+            prevList.map((prize) =>
                 // 選択解除時はメモもリセットする
-                prize.prizeNum === prizeNum ? { ...prize, isSelected: false, memo: "" } : prize
-            )
+                prize.prizeNum === prizeNum ? { ...prize, isSelected: false, memo: "" } : prize,
+            ),
         );
     };
-
-    /**
-     * メモ欄の更新
-     * @param prizeNum 対象の景品番号
-     * @param memo 入力されたメモ
-     **/
-    const handleMemoChange = (prizeNum: number, memo: string) => {
-        setPrizeObjectList(prevList =>
-            prevList.map(prize =>
-                prize.prizeNum === prizeNum ? { ...prize, memo: memo } : prize
-            )
-        );
-    };
-
 
     // ============================================================
     // Step 4 用のハンドラー (景品発表)
@@ -151,10 +122,8 @@ export const useBingoState = () => {
      * @param id 発表する景品のID
      **/
     const handleAnnouncePrize = (id: string) => {
-        setPrizeObjectList(prevList =>
-            prevList.map(prize =>
-                prize.id === id ? { ...prize, isAnnounced: true } : prize
-            )
+        setPrizeObjectList((prevList) =>
+            prevList.map((prize) => (prize.id === id ? { ...prize, isAnnounced: true } : prize)),
         );
     };
 
@@ -163,10 +132,8 @@ export const useBingoState = () => {
      * @param id 取り消す景品のID
      **/
     const handleUnannouncePrize = (id: string) => {
-        setPrizeObjectList(prevList =>
-            prevList.map(prize =>
-                prize.id === id ? { ...prize, isAnnounced: false } : prize
-            )
+        setPrizeObjectList((prevList) =>
+            prevList.map((prize) => (prize.id === id ? { ...prize, isAnnounced: false } : prize)),
         );
     };
 
@@ -193,7 +160,6 @@ export const useBingoState = () => {
         handleDragEnd, // ドラッグ＆ドロップ終了時
         handleSelectPrize, // 景品選択
         handleDeselectPrize, // 景品選択状態解除
-        handleMemoChange, // メモ欄の更新
         handleAnnouncePrize, // 景品発表
         handleUnannouncePrize, // 景品発表状態解除
     };

@@ -1,16 +1,7 @@
-// bingo-num-app/components/steps/PrizeInputStep.tsx
-
-"use client"
+"use client";
 
 import { useMemo, useState } from "react";
-// 型定義
 import type { PrizeObject, Step } from "@/types";
-
-// ============================================================
-// 【ステップ1：景品入力コンポーネント】
-// ポイント:
-// - 景品リストを改行区切りで入力。
-// ============================================================
 
 interface PrizeInputStepProps {
     setIsProgress: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,15 +9,20 @@ interface PrizeInputStepProps {
     setCurrentStep: React.Dispatch<React.SetStateAction<Step>>;
 }
 
+/**
+ * ステップ1：景品入力コンポーネント
+ *
+ * ポイント:
+ * - 景品リストを改行区切りで入力。
+ */
 function PrizeInputStep({ setPrizeObjectList, setCurrentStep, setIsProgress }: PrizeInputStepProps) {
-
     // テキストエリアの入力値を管理
     const [prizeInputText, setPrizeInputText] = useState("");
 
     // テキストエリアの入力に基づいて現在の景品リスト（文字列配列）を計算
     const currentPrizes = useMemo(() => {
         // 改行で分割し、空行を除去
-        return prizeInputText.split('\n').filter(name => name.trim() !== '');
+        return prizeInputText.split("\n").filter((name) => name.trim() !== "");
     }, [prizeInputText]);
 
     // 現在の景品数
@@ -61,7 +57,11 @@ function PrizeInputStep({ setPrizeObjectList, setCurrentStep, setIsProgress }: P
     return (
         <div className="p-6 md:p-8">
             <h2 className="text-2xl font-semibold text-gray-700 mb-2">Step 1: 景品入力</h2>
-            <p className="text-lg text-gray-600 mb-6">景品名を1行に1つずつ入力してください。<br />（メモ帳などからのコピー＆ペーストを推奨します）</p>
+            <p className="text-lg text-gray-600 mb-6">
+                景品名を1行に1つずつ入力してください。
+                <br />
+                （メモ帳などからのコピー＆ペーストを推奨します）
+            </p>
 
             {/* 現在の景品数を表示 */}
             <div className="flex justify-between items-center mb-4 p-4 bg-gray-100 rounded-lg">
@@ -76,19 +76,19 @@ function PrizeInputStep({ setPrizeObjectList, setCurrentStep, setIsProgress }: P
                 onChange={(e) => setPrizeInputText(e.target.value)}
                 rows={15}
                 className="w-full p-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                placeholder={"例：\n旅行券\nワイヤレスイヤホン\nモバイルバッテリー\n・\n・\n・"} />
+                placeholder={"例：\n旅行券\nワイヤレスイヤホン\nモバイルバッテリー\n・\n・\n・"}
+            />
 
             {/* 決定ボタン */}
             <div className="mt-8 text-center">
                 <button
                     onClick={handleSubmit}
                     disabled={currentPrizeCount === 0} // 景品が0の場合は無効
-                    className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                >
+                    className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                     参加人数入力へ進む
                 </button>
             </div>
         </div>
     );
 }
-export default PrizeInputStep
+export default PrizeInputStep;
