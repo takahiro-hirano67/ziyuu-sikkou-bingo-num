@@ -1,17 +1,7 @@
-// bingo-num-app/components/steps/AnnouncePrizeStep.tsx
-
 "use client"
 
 import { useMemo } from "react";
-// 型定義
 import type { PrizeObject } from "@/types";
-
-// ============================================================
-// 【ステップ4：景品発表コンポーネント】
-// ポイント:
-// - 発表順リストをクリックすることで、対応する引換番号と景品名を公開する。
-// ============================================================
-
 interface AnnouncePrizeStepProps {
     prizeObjectList: PrizeObject[];
     setPrizeObjectList: React.Dispatch<React.SetStateAction<PrizeObject[]>>;
@@ -22,8 +12,13 @@ interface AnnouncePrizeStepProps {
     handleUnannouncePrize: (id: string) => void; // 景品発表状態解除
 }
 
+/**
+ * ステップ4: 景品発表コンポーネント
+ * 
+ * ポイント:
+ * - 発表順リストをクリックすることで、対応する引換番号と景品名を公開する。
+ */
 function AnnouncePrizeStep({
-    setPrizeObjectList,
     numberOfPeople,
     activePrizes,
     numberOfActivePrizes,
@@ -119,7 +114,7 @@ function AnnounceNumberBox({ prize }: { prize: PrizeObject }) {
     const isAnnounced = prize.isAnnounced;
     return (
         <div
-            className={`flex flex-col justify-between h-36 w-full rounded-lg border-2 p-3 text-center transition-all duration-300
+            className={`flex flex-col gap-4 min-h-24 w-full rounded-lg border-2 p-3 text-center transition-all duration-200
         ${isAnnounced
                     ? 'bg-yellow-100 border-yellow-300 shadow-lg scale-105' // 発表済み
                     : 'bg-gray-100 border-gray-300' // 未発表
@@ -137,11 +132,6 @@ function AnnounceNumberBox({ prize }: { prize: PrizeObject }) {
                         ???
                     </span>
                 )}
-            </div>
-
-            {/* メモ */}
-            <div className="text-sm text-gray-600 truncate" title={prize.memo}>
-                {prize.memo || '(メモなし)'}
             </div>
         </div>
     );

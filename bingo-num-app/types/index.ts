@@ -1,10 +1,6 @@
-// bingo-num-app/types/index.ts
-
-// --- 型定義 ---
-
-// ============================================================
-// 景品オブジェクトの型
-// ============================================================
+/**
+ * 景品オブジェクトの型
+ */
 export type PrizeObject = {
     id: string; // dnd-kit用の一意のID
     prizeName: string; // 景品名
@@ -13,12 +9,7 @@ export type PrizeObject = {
     isSelected: boolean; // 景品番号が選択されたか (Step 3)
     isAnnounced: boolean; // 景品が発表されたか (Step 4)
     isExcluded: boolean; // 景品が除外されたか (Step 2)
-    memo: string; // メモ (Step 3)
 };
 
-
-// ============================================================
-// アプリの現在のステップを示す型
-// ============================================================
-
+// アプリのステップ
 export type Step = "prizeInput" | "peopleInput" | "selectPrizeNum" | "announcePrize";
